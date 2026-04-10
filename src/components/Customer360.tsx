@@ -9,7 +9,13 @@ import {
   CheckCircle2, 
   Info,
   Building2,
-  Network
+  Network,
+  FileText, 
+  ArrowUpRight, 
+  Clock, 
+  XCircle, 
+  ChevronRight,
+  Plus
 } from "lucide-react";
 import { motion } from "motion/react";
 import { 
@@ -17,7 +23,8 @@ import {
   MOCK_EXPOSURE, 
   MOCK_RATIOS, 
   MOCK_RATINGS, 
-  MOCK_GROUP 
+  MOCK_GROUP,
+  MOCK_APPLICATION_HISTORY
 } from "../constants";
 import { GroupEntity } from "../types";
 
@@ -31,6 +38,12 @@ export default function Customer360() {
       <div className="flex justify-between items-end">
         <div>
           <div className="flex items-center gap-3 mb-1">
+            <button 
+              onClick={() => window.location.hash = "portfolio"}
+              className="text-primary text-[10px] font-bold uppercase tracking-wider hover:underline flex items-center gap-1"
+            >
+              <ChevronRight className="w-3 h-3 rotate-180" /> Back to Portfolio
+            </button>
             <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider">
               Corporate Debtor
             </span>
@@ -235,6 +248,76 @@ export default function Customer360() {
             <p className="text-[10px] text-text-secondary">
               Rating was upgraded following the successful $50M capital infusion and reduction of short-term debt.
             </p>
+          </div>
+        </div>
+
+        {/* Application History */}
+        <div className="col-span-12 carbon-card">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xs font-semibold uppercase tracking-wide flex items-center gap-2">
+              <FileText className="w-4 h-4" /> Loan Application History
+            </h3>
+            <button 
+              onClick={() => window.location.hash = "applications"}
+              className="bg-primary text-white px-3 py-1.5 text-[10px] font-bold flex items-center gap-2 hover:bg-primary-hover transition-colors"
+            >
+              <Plus className="w-3 h-3" /> NEW APPLICATION
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="carbon-table">
+              <thead>
+                <tr>
+                  <th>App ID</th>
+                  <th>Type</th>
+                  <th className="text-right">Amount</th>
+                  <th>Submission Date</th>
+                  <th>Current Stage</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {MOCK_APPLICATION_HISTORY.map((app) => (
+                  <tr 
+                    key={app.id} 
+                    className="hover:bg-surface-hover cursor-pointer group"
+                    onClick={() => window.location.hash = "applications"}
+                  >
+                    <td className="font-mono text-[11px] font-bold">{app.id}</td>
+                    <td className="text-xs font-medium">{app.type}</td>
+                    <td className="text-right font-mono text-xs">
+                      {app.amount > 0 ? formatCurrency(app.amount) : "N/A"}
+                    </td>
+                    <td className="text-xs text-text-secondary">{app.date}</td>
+                    <td>
+                      <span className="text-[10px] font-medium bg-surface px-2 py-0.5 border border-border">
+                        {app.stage}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-1.5">
+                        {app.status === "Approved" && <CheckCircle2 className="w-3 h-3 text-success" />}
+                        {app.status === "In Progress" && <Clock className="w-3 h-3 text-warning" />}
+                        {app.status === "Cancelled" && <XCircle className="w-3 h-3 text-danger" />}
+                        <span className={`text-[10px] font-bold uppercase ${
+                          app.status === "Approved" ? "text-success" :
+                          app.status === "In Progress" ? "text-warning" :
+                          "text-danger"
+                        }`}>
+                          {app.status}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="text-right">
+                      <button className="opacity-0 group-hover:opacity-100 p-1 text-primary transition-opacity">
+                        <ArrowUpRight className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 

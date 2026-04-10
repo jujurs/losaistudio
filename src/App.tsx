@@ -10,6 +10,9 @@ import Dashboard from "./components/Dashboard";
 import Customer360 from "./components/Customer360";
 import ApplicationCase from "./components/ApplicationCase";
 import BpmnModeler from "./components/BpmnModeler";
+import FinancialAnalysis from "./components/FinancialAnalysis";
+import Tasks from "./components/Tasks";
+import PortfolioList from "./components/PortfolioList";
 
 export default function App() {
   const [currentView, setCurrentView] = useState("dashboard");
@@ -34,19 +37,12 @@ export default function App() {
         <Topbar />
         <main className="pt-12 min-h-screen">
           {currentView === "dashboard" && <Dashboard />}
-          {currentView === "portfolio" && <Customer360 />}
+          {currentView === "portfolio" && <PortfolioList />}
+          {currentView === "portfolio-detail" && <Customer360 />}
           {currentView === "applications" && <ApplicationCase />}
-          {currentView === "analysis" && <BpmnModeler />}
-          {currentView === "tasks" && (
-            <div className="p-8 text-center text-text-secondary">
-              Tasks Module - Coming Soon
-            </div>
-          )}
-          {currentView === "admin" && (
-            <div className="p-8 text-center text-text-secondary">
-              Admin Module - Coming Soon
-            </div>
-          )}
+          {currentView === "analysis" && <FinancialAnalysis />}
+          {currentView === "tasks" && <Tasks />}
+          {currentView === "admin" && <BpmnModeler />}
         </main>
       </div>
     </div>

@@ -59,3 +59,42 @@ export const MOCK_GROUP: GroupEntity = {
     { id: "G-005", name: "North Real Estate Ventures", role: "SISTER COMPANY", ownership: "40% OWNERSHIP" },
   ],
 };
+
+export const MOCK_FINANCIALS = {
+  periods: ["FY 2021", "FY 2022", "FY 2023 (Audited)"],
+  rows: [
+    { label: "Revenue", values: [85000000, 92000000, 105000000], category: "Income Statement" },
+    { label: "Cost of Goods Sold", values: [52000000, 55000000, 62000000], category: "Income Statement" },
+    { label: "Gross Profit", values: [33000000, 37000000, 43000000], category: "Income Statement", isBold: true },
+    { label: "Operating Expenses", values: [18000000, 20000000, 22000000], category: "Income Statement" },
+    { label: "EBITDA", values: [15000000, 17000000, 21000000], category: "Income Statement", isBold: true },
+    { label: "Net Income", values: [8500000, 9800000, 12400000], category: "Income Statement", isBold: true },
+    { label: "Cash & Equivalents", values: [12000000, 14500000, 18200000], category: "Balance Sheet" },
+    { label: "Total Assets", values: [120000000, 135000000, 150000000], category: "Balance Sheet", isBold: true },
+    { label: "Total Liabilities", values: [75000000, 82000000, 88000000], category: "Balance Sheet" },
+    { label: "Total Equity", values: [45000000, 53000000, 62000000], category: "Balance Sheet", isBold: true },
+  ]
+};
+
+export const MOCK_TASKS_LIST = [
+  { id: "TSK-001", title: "Review Financial Spreading", app: "APP-2024-001", customer: "Global Logistics Systems Corp.", due: "Today", priority: "High", status: "Pending" },
+  { id: "TSK-002", title: "Verify Collateral Perfection", app: "APP-2024-003", customer: "Horizon Tech Solutions", due: "Tomorrow", priority: "Medium", status: "In Progress" },
+  { id: "TSK-003", title: "Approve Pricing Deviation", app: "APP-2024-002", customer: "Apex Manufacturing Ltd.", due: "In 2 days", priority: "High", status: "Pending" },
+  { id: "TSK-004", title: "KYC Refresh Required", app: "N/A", customer: "Starlight Retail Group", due: "In 5 days", priority: "Low", status: "Pending" },
+  { id: "TSK-005", title: "Annual Review Submission", app: "APP-2023-998", customer: "North Real Estate Ventures", due: "In 1 week", priority: "Medium", status: "Pending" },
+];
+
+export const MOCK_PORTFOLIOS = [
+  { id: "DEB-9920-X1", name: "Global Logistics Systems Corp.", sector: "Industrial", location: "Chicago", exposure: 42850000, rating: "A-", status: "Active" },
+  { id: "DEB-8812-Y2", name: "Apex Manufacturing Ltd.", sector: "Manufacturing", location: "Detroit", exposure: 25400000, rating: "BBB+", status: "Active" },
+  { id: "DEB-7734-Z3", name: "Horizon Tech Solutions", sector: "Technology", location: "San Francisco", exposure: 12800000, rating: "A", status: "Active" },
+  { id: "DEB-6655-W4", name: "Starlight Retail Group", sector: "Retail", location: "New York", exposure: 18200000, rating: "BBB", status: "Under Review" },
+];
+
+export const MOCK_APPLICATION_HISTORY = [
+  { id: "APP-2024-001", type: "Renewal & Enhancement", amount: 15000000, date: "Apr 10, 2024", status: "In Progress", stage: "Credit Analysis" },
+  { id: "APP-2023-142", type: "Capex Term Loan", amount: 10000000, date: "Nov 15, 2023", status: "Approved", stage: "Booked" },
+  { id: "APP-2023-088", type: "Working Capital Line", amount: 5000000, date: "Aug 22, 2023", status: "Approved", stage: "Booked" },
+  { id: "APP-2023-012", type: "New Money", amount: 12000000, date: "Jan 05, 2023", status: "Cancelled", stage: "Withdrawn" },
+  { id: "APP-2022-195", type: "Annual Review", amount: 0, date: "Dec 12, 2022", status: "Approved", stage: "Completed" },
+];

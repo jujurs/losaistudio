@@ -66,7 +66,10 @@ export default function Dashboard() {
             <button className="p-1.5 text-text-secondary hover:bg-surface-hover border border-border">
               <Filter className="w-4 h-4" />
             </button>
-            <button className="text-xs text-primary font-medium flex items-center gap-1 hover:underline">
+            <button 
+              onClick={() => window.location.hash = "applications"}
+              className="text-xs text-primary font-medium flex items-center gap-1 hover:underline"
+            >
               View All <ChevronRight className="w-3 h-3" />
             </button>
           </div>
@@ -87,7 +90,11 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {pipeline.map((item, i) => (
-                <tr key={i} className="hover:bg-surface-hover cursor-pointer group">
+                <tr 
+                  key={i} 
+                  onClick={() => window.location.hash = "applications"}
+                  className="hover:bg-surface-hover cursor-pointer group"
+                >
                   <td className="font-mono text-[11px]">{item.id}</td>
                   <td className="font-semibold">{item.customer}</td>
                   <td>{item.type}</td>
@@ -150,7 +157,11 @@ export default function Dashboard() {
               { task: "Verify Collateral Perfection", app: "APP-2024-003", due: "Tomorrow", priority: "Medium" },
               { task: "Approve Pricing Deviation", app: "APP-2024-002", due: "In 2 days", priority: "High" },
             ].map((task, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-white border border-border hover:border-primary transition-colors cursor-pointer">
+              <div 
+                key={i} 
+                onClick={() => window.location.hash = "tasks"}
+                className="flex items-center justify-between p-3 bg-white border border-border hover:border-primary transition-colors cursor-pointer"
+              >
                 <div>
                   <p className="text-xs font-bold">{task.task}</p>
                   <p className="text-[10px] text-text-secondary">{task.app} • Due {task.due}</p>
