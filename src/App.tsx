@@ -39,7 +39,8 @@ export default function App() {
         <main className="pt-12 min-h-screen">
           {currentView === "dashboard" && <Dashboard />}
           {currentView === "portfolio" && <PortfolioList />}
-          {currentView === "new-portfolio" && <NewPortfolioForm />}
+          {currentView === "new-portfolio" && <NewPortfolioForm mode="create" />}
+          {currentView === "edit-portfolio" && <NewPortfolioForm mode="edit" />}
           {currentView === "portfolio-detail" && <Customer360 />}
           {currentView === "applications" && <ApplicationCase />}
           {currentView === "analysis" && <FinancialAnalysis />}

@@ -11,7 +11,7 @@ import {
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", id: "dashboard" },
-  { icon: Briefcase, label: "Portfolio", id: "portfolio", active: true },
+  { icon: Briefcase, label: "Portfolio", id: "portfolio" },
   { icon: FileText, label: "Applications", id: "applications" },
   { icon: BarChart3, label: "Analysis", id: "analysis" },
   { icon: CheckSquare, label: "Tasks", id: "tasks" },
@@ -19,6 +19,23 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const [activeId, setActiveId] = React.useState("dashboard");
+
+  React.useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace("#", "") || "dashboard";
+      // Map detail views to their parent nav items
+      if (hash === "new-portfolio" || hash === "edit-portfolio" || hash === "portfolio-detail") {
+        setActiveId("portfolio");
+      } else {
+        setActiveId(hash);
+      }
+    };
+    window.addEventListener("hashchange", handleHash);
+    handleHash();
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-surface border-r border-border flex flex-col z-40">
       <div className="p-4 flex items-center gap-3 border-b border-border mb-4">
@@ -37,7 +54,7 @@ export default function Sidebar() {
             key={item.id}
             href={`#${item.id}`}
             className={`flex items-center px-4 py-3 text-xs font-medium transition-colors ${
-              item.active 
+              activeId === item.id 
                 ? "bg-white border-l-4 border-primary text-primary" 
                 : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
             }`}

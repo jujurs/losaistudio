@@ -30,8 +30,9 @@ const SECTIONS = [
 ];
 
 import { ShieldCheck, Network } from "lucide-react";
+import { MOCK_CUSTOMER } from "../constants";
 
-export default function NewPortfolioForm() {
+export default function NewPortfolioForm({ mode = "create" }: { mode?: "create" | "edit" }) {
   const [activeSection, setActiveSection] = useState("customer-info");
 
   const scrollToSection = (id: string) => {
@@ -48,25 +49,27 @@ export default function NewPortfolioForm() {
       <div className="sticky top-0 z-20 bg-white border-b border-border px-8 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => window.location.hash = "portfolio"}
+            onClick={() => window.location.hash = mode === "edit" ? "portfolio-detail" : "portfolio"}
             className="p-2 hover:bg-surface rounded-full transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-text-secondary" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-text-primary uppercase tracking-tight">Onboard New Corporate Portfolio</h1>
+            <h1 className="text-xl font-bold text-text-primary uppercase tracking-tight">
+              {mode === "edit" ? "Update Corporate Portfolio" : "Onboard New Corporate Portfolio"}
+            </h1>
             <p className="text-[10px] text-text-secondary font-bold uppercase">Enterprise Loan Origination System</p>
           </div>
         </div>
         <div className="flex gap-3">
           <button 
-            onClick={() => window.location.hash = "portfolio"}
+            onClick={() => window.location.hash = mode === "edit" ? "portfolio-detail" : "portfolio"}
             className="px-6 py-2 text-xs font-bold border border-border hover:bg-surface transition-colors"
           >
             CANCEL
           </button>
           <button className="px-6 py-2 text-xs font-bold bg-primary text-white hover:bg-primary-hover flex items-center gap-2 transition-colors">
-            <Save className="w-4 h-4" /> SAVE PORTFOLIO
+            <Save className="w-4 h-4" /> {mode === "edit" ? "UPDATE PORTFOLIO" : "SAVE PORTFOLIO"}
           </button>
         </div>
       </div>
@@ -105,8 +108,8 @@ export default function NewPortfolioForm() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <FormField label="Customer Type" type="select" options={["Corporate", "SME", "Individual"]} readonly />
-                <FormField label="SIBS CIF No" type="text" placeholder="Enter CIF Number" />
-                <FormField label="Owning Branch" type="lookup" placeholder="Search Branch..." />
+                <FormField label="SIBS CIF No" type="text" defaultValue={mode === "edit" ? MOCK_CUSTOMER.id : ""} />
+                <FormField label="Owning Branch" type="lookup" defaultValue={mode === "edit" ? "Main Branch - Chicago" : ""} />
                 <FormField label="Business Source" type="select" options={["Direct", "Referral", "Broker"]} />
                 <FormField label="Other Business Source" type="text" />
                 <FormField label="Referral Source" type="select" options={["Internal", "External"]} />
@@ -114,19 +117,19 @@ export default function NewPortfolioForm() {
                 <FormField label="Referral Branch" type="lookup" />
                 <FormField label="Referral Code" type="text" />
                 <FormField label="Referral Name" type="text" />
-                <FormField label="Customer Full Name" type="text" className="md:col-span-2" />
-                <FormField label="SIBS Customer Name" type="text" />
+                <FormField label="Customer Full Name" type="text" className="md:col-span-2" defaultValue={mode === "edit" ? MOCK_CUSTOMER.name : ""} />
+                <FormField label="SIBS Customer Name" type="text" defaultValue={mode === "edit" ? MOCK_CUSTOMER.legalName : ""} />
                 <FormField label="Formerly Known As" type="text" />
                 <FormField label="ID Type" type="select" options={["NPWP", "KTP", "Passport"]} />
                 <FormField label="Sust. Finance Risk" type="select" options={["Low", "Medium", "High"]} />
                 <FormField label="Alternate ID Type" type="select" options={["NPWP", "KTP", "Passport"]} />
-                <FormField label="ID No." type="text" />
+                <FormField label="ID No." type="text" defaultValue={mode === "edit" ? MOCK_CUSTOMER.taxId : ""} />
                 <FormField label="Alternate ID No." type="text" />
-                <FormField label="Date of Incorporation" type="date" />
+                <FormField label="Date of Incorporation" type="date" defaultValue={mode === "edit" ? "2008-10-14" : ""} />
                 <FormField label="Type of Company" type="select" options={["PT", "CV", "Firm"]} />
-                <FormField label="Country of Incorporation" type="lookup" />
+                <FormField label="Country of Incorporation" type="lookup" defaultValue={mode === "edit" ? "United States" : ""} />
                 <FormField label="Type of Company Activity" type="select" options={["Trading", "Manufacturing", "Services"]} />
-                <FormField label="Years in Industry" type="number" />
+                <FormField label="Years in Industry" type="number" defaultValue={mode === "edit" ? 15 : ""} />
                 <FormField label="Startup Company?" type="select" options={["Yes", "No"]} />
                 <FormField label="No of Permanent Employees" type="number" />
                 <FormField label="Citizen Code" type="select" options={["WNI", "WNA"]} />
@@ -390,13 +393,14 @@ export default function NewPortfolioForm() {
   );
 }
 
-function FormField({ label, type, options, placeholder, readonly, className = "" }: any) {
+function FormField({ label, type, options, placeholder, readonly, defaultValue, className = "" }: any) {
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
       <label className="carbon-label">{label}</label>
       {type === "select" ? (
         <select 
           disabled={readonly}
+          defaultValue={defaultValue}
           className="w-full bg-white border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none disabled:bg-surface"
         >
           {options.map((opt: string) => <option key={opt}>{opt}</option>)}
@@ -404,6 +408,7 @@ function FormField({ label, type, options, placeholder, readonly, className = ""
       ) : type === "textarea" ? (
         <textarea 
           readOnly={readonly}
+          defaultValue={defaultValue}
           className="w-full bg-white border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none min-h-[80px]"
           placeholder={placeholder}
         />
@@ -412,6 +417,7 @@ function FormField({ label, type, options, placeholder, readonly, className = ""
           <input 
             readOnly={readonly}
             type="text" 
+            defaultValue={defaultValue}
             className="w-full bg-white border border-border p-2 pr-8 text-xs focus:ring-1 focus:ring-primary outline-none"
             placeholder={placeholder || "Search..."}
           />
@@ -422,6 +428,7 @@ function FormField({ label, type, options, placeholder, readonly, className = ""
           <input 
             readOnly={readonly}
             type={type} 
+            defaultValue={defaultValue}
             className="w-full bg-white border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none disabled:bg-surface"
             placeholder={placeholder}
           />
