@@ -20,7 +20,8 @@ import {
   CheckCircle2,
   FileSearch,
   LayoutList,
-  BarChart3
+  BarChart3,
+  Calculator
 } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -29,6 +30,7 @@ import FacilityDetailForm from "./FacilityDetailForm";
 import DrawdownConditionManager from "./DrawdownConditionManager";
 import GlobalTCManager from "./GlobalTCManager";
 import TBOManager from "./TBOManager";
+import FinancialAnalysis from "./FinancialAnalysis";
 
 const stages = [
   { id: "origination", label: "Origination", status: "completed" },
@@ -49,6 +51,7 @@ const TABS = [
   { id: "drawdown", label: "Drawdown Conditions", icon: CheckSquare },
   { id: "global-tc", label: "Global T&C & Covenants", icon: FileSearch },
   { id: "tbo", label: "Total Business Opportunity", icon: BarChart3 },
+  { id: "financials", label: "Financial Spreading", icon: Calculator },
 ];
 
 export default function ApplicationCase() {
@@ -1202,6 +1205,18 @@ export default function ApplicationCase() {
                       { category: 'Fee Based Income', opportunityAmount: 800000, capturedAmount: 250000, probability: 90, status: 'Won' },
                     ]}
                   />
+                </section>
+              </div>
+            )}
+            {activeTab === "financials" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <Calculator className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Financial Spreading & Analysis</h2>
+                  </div>
+
+                  <FinancialAnalysis />
                 </section>
               </div>
             )}
