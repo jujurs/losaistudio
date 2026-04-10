@@ -11,7 +11,16 @@ import {
   AlertTriangle,
   X,
   Link as LinkIcon,
-  Unlink
+  Unlink,
+  Info,
+  CheckSquare,
+  Activity,
+  Search,
+  History,
+  CheckCircle2,
+  FileSearch,
+  LayoutList,
+  BarChart3
 } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -24,15 +33,27 @@ const stages = [
   { id: "booking", label: "Booking", status: "pending" },
 ];
 
+const TABS = [
+  { id: "setup", label: "Application Setup", icon: FileText },
+  { id: "compliance", label: "Compliance & Exposure", icon: ShieldCheck },
+  { id: "facilities", label: "Facility Builder", icon: Layers },
+  { id: "collaterals", label: "Collateral Builder", icon: Scale },
+  { id: "verification", label: "Verification & Routing", icon: ClipboardCheck },
+  { id: "summary", label: "Facility Summary", icon: LayoutList },
+];
+
 export default function ApplicationCase() {
+  const [activeTab, setActiveTab] = useState("setup");
+  
+  // Existing state from previous implementation
   const [facilities, setFacilities] = useState([
-    { id: 1, type: "Term Loan", amount: 10000000, currency: "USD", tenor: "60 Months", pricing: "SOFR + 2.5%" },
-    { id: 2, type: "Working Capital Line", amount: 5000000, currency: "USD", tenor: "12 Months", pricing: "SOFR + 2.0%" },
+    { id: 1, type: "Term Loan", amount: 10000000, currency: "USD", tenor: "60 Months", pricing: "SOFR + 2.5%", status: "Proposed" },
+    { id: 2, type: "Working Capital Line", amount: 5000000, currency: "USD", tenor: "12 Months", pricing: "SOFR + 2.0%", status: "Proposed" },
   ]);
 
   const [collaterals, setCollaterals] = useState([
-    { id: 1, type: "Real Estate", value: 12000000, description: "Warehouse in Chicago" },
-    { id: 2, type: "Corporate Guarantee", value: 5000000, description: "Parent Co Guarantee" },
+    { id: 1, type: "Real Estate", value: 12000000, description: "Warehouse in Chicago", code: "RE-001" },
+    { id: 2, type: "Corporate Guarantee", value: 5000000, description: "Parent Co Guarantee", code: "CG-002" },
   ]);
 
   const [links, setLinks] = useState([
@@ -45,22 +66,6 @@ export default function ApplicationCase() {
   const [isCollateralModalOpen, setIsCollateralModalOpen] = useState(false);
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
 
-  const [newFacility, setNewFacility] = useState({ type: "Term Loan", amount: "", tenor: "60 Months", pricing: "SOFR + 2.5%" });
-  const [newCollateral, setNewCollateral] = useState({ type: "Real Estate", value: "", description: "" });
-  const [linkData, setLinkData] = useState({ facilityId: "", collateralId: "" });
-
-  const addFacility = () => {
-    const id = facilities.length > 0 ? Math.max(...facilities.map(f => f.id)) + 1 : 1;
-    setFacilities([...facilities, { ...newFacility, id, amount: Number(newFacility.amount), currency: "USD" }]);
-    setIsFacilityModalOpen(false);
-  };
-
-  const addCollateral = () => {
-    const id = collaterals.length > 0 ? Math.max(...collaterals.map(c => c.id)) + 1 : 1;
-    setCollaterals([...collaterals, { ...newCollateral, id, value: Number(newCollateral.value) }]);
-    setIsCollateralModalOpen(false);
-  };
-
   const toggleLink = (fId: number, cId: number) => {
     const exists = links.find(l => l.facilityId === fId && l.collateralId === cId);
     if (exists) {
@@ -71,9 +76,9 @@ export default function ApplicationCase() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-surface flex flex-col">
       {/* Workflow Stepper */}
-      <div className="bg-white border border-border p-4 flex items-center justify-between">
+      <div className="bg-white border-b border-border p-4 flex items-center justify-between sticky top-12 z-10 shadow-sm px-8">
         {stages.map((stage, i) => (
           <React.Fragment key={stage.id}>
             <div className="flex flex-col items-center gap-2 flex-1">
@@ -82,7 +87,7 @@ export default function ApplicationCase() {
                 stage.status === 'current' ? 'bg-primary border-primary text-white' :
                 'bg-white border-border text-text-secondary'
               }`}>
-                {stage.status === 'completed' ? <ClipboardCheck className="w-4 h-4" /> : i + 1}
+                {stage.status === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
               </div>
               <span className={`text-[10px] font-bold uppercase tracking-wider ${
                 stage.status === 'current' ? 'text-primary' : 'text-text-secondary'
@@ -97,252 +102,973 @@ export default function ApplicationCase() {
         ))}
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
-        {/* Left Column: Details & Structuring */}
-        <div className="col-span-12 lg:col-span-8 space-y-6">
-          {/* Application Header */}
-          <div className="carbon-card">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-xl font-bold text-text-primary">APP-2024-001</h2>
-                <p className="text-text-secondary text-sm">Renewal & Enhancement — Global Logistics Systems Corp.</p>
-              </div>
-              <span className="bg-warning/10 text-warning text-[10px] px-2 py-1 font-bold uppercase border border-warning/20">
-                Priority: High
-              </span>
-            </div>
-            <div className="grid grid-cols-3 gap-4 text-xs">
-              <div>
-                <label className="carbon-label">Requested Amount</label>
-                <p className="font-bold text-lg text-primary">$15,000,000.00</p>
-              </div>
-              <div>
-                <label className="carbon-label">Total Exposure (Post-App)</label>
-                <p className="font-bold text-lg">$42,850,000.00</p>
-              </div>
-              <div>
-                <label className="carbon-label">RM Owner</label>
-                <p className="font-bold">Sarah Jenkins</p>
-              </div>
-            </div>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Tab Navigation Sidebar */}
+        <div className="w-64 bg-white border-r border-border overflow-y-auto hidden lg:block">
+          <div className="p-4 border-b border-border bg-surface/50">
+            <h2 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">Application</h2>
+            <p className="text-sm font-bold text-primary">APP-2024-001</p>
           </div>
-
-          {/* Facility Structuring */}
-          <div className="carbon-card">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide flex items-center gap-2">
-                <Layers className="w-4 h-4" /> Facility Structuring
-              </h3>
-              <button 
-                onClick={() => setIsFacilityModalOpen(true)}
-                className="text-primary text-[11px] font-bold flex items-center gap-1 hover:underline"
+          <nav className="p-4 space-y-1">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold transition-all border-l-4 ${
+                  activeTab === tab.id 
+                    ? "bg-surface border-primary text-primary" 
+                    : "border-transparent text-text-secondary hover:bg-surface hover:text-text-primary"
+                }`}
               >
-                <Plus className="w-3 h-3" /> ADD FACILITY
+                <tab.icon className="w-4 h-4" />
+                <span className="uppercase tracking-wider text-left">{tab.label}</span>
               </button>
-            </div>
-            <div className="space-y-3">
-              {facilities.map((f) => (
-                <div key={f.id} className="p-4 bg-white border border-border hover:border-primary transition-colors group">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <p className="text-sm font-bold">{f.type}</p>
-                      <p className="text-[10px] text-text-secondary">Facility ID: FAC-00{f.id}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => { setLinkData({ ...linkData, facilityId: String(f.id) }); setIsLinkModalOpen(true); }}
-                        className="text-primary text-[10px] font-bold flex items-center gap-1 hover:underline"
-                      >
-                        <LinkIcon className="w-3 h-3" /> LINK COLLATERAL
-                      </button>
-                      <button className="text-text-secondary hover:text-danger opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-4 gap-4 text-xs">
-                    <div>
-                      <label className="carbon-label">Amount</label>
-                      <p className="font-medium">{f.currency} {f.amount.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <label className="carbon-label">Tenor</label>
-                      <p className="font-medium">{f.tenor}</p>
-                    </div>
-                    <div>
-                      <label className="carbon-label">Pricing</label>
-                      <p className="font-medium">{f.pricing}</p>
-                    </div>
-                    <div>
-                      <label className="carbon-label">Repayment</label>
-                      <p className="font-medium">Bullet at Maturity</p>
-                    </div>
-                  </div>
-                  {/* Linked Collaterals */}
-                  <div className="mt-4 pt-3 border-t border-surface">
-                    <label className="carbon-label mb-2">Linked Collaterals</label>
-                    <div className="flex flex-wrap gap-2">
-                      {links.filter(l => l.facilityId === f.id).map(l => {
-                        const col = collaterals.find(c => c.id === l.collateralId);
-                        return col ? (
-                          <div key={col.id} className="bg-surface px-2 py-1 border border-border flex items-center gap-2 text-[10px]">
-                            <ShieldCheck className="w-3 h-3 text-success" />
-                            <span className="font-medium">{col.type} - ${col.value.toLocaleString()}</span>
-                            <button onClick={() => toggleLink(f.id, col.id)} className="text-text-secondary hover:text-danger">
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ) : null;
-                      })}
-                      {links.filter(l => l.facilityId === f.id).length === 0 && (
-                        <p className="text-[10px] text-text-secondary italic">No collaterals linked</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Collateral Management */}
-          <div className="carbon-card">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4" /> Collateral Management
-              </h3>
-              <button 
-                onClick={() => setIsCollateralModalOpen(true)}
-                className="text-primary text-[11px] font-bold flex items-center gap-1 hover:underline"
-              >
-                <Plus className="w-3 h-3" /> ADD COLLATERAL
-              </button>
-            </div>
-            <div className="space-y-3">
-              {collaterals.map((c) => (
-                <div key={c.id} className="p-4 bg-white border border-border hover:border-primary transition-colors group">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <p className="text-sm font-bold">{c.type}</p>
-                      <p className="text-[10px] text-text-secondary">Collateral ID: COL-00{c.id}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => { setLinkData({ ...linkData, collateralId: String(c.id) }); setIsLinkModalOpen(true); }}
-                        className="text-primary text-[10px] font-bold flex items-center gap-1 hover:underline"
-                      >
-                        <LinkIcon className="w-3 h-3" /> LINK FACILITIES
-                      </button>
-                      <button className="text-text-secondary hover:text-danger opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 text-xs">
-                    <div>
-                      <label className="carbon-label">Market Value</label>
-                      <p className="font-medium">${c.value.toLocaleString()}</p>
-                    </div>
-                    <div className="col-span-2">
-                      <label className="carbon-label">Description</label>
-                      <p className="font-medium">{c.description}</p>
-                    </div>
-                  </div>
-                  {/* Linked Facilities */}
-                  <div className="mt-4 pt-3 border-t border-surface">
-                    <label className="carbon-label mb-2">Secures Facilities</label>
-                    <div className="flex flex-wrap gap-2">
-                      {links.filter(l => l.collateralId === c.id).map(l => {
-                        const fac = facilities.find(f => f.id === l.facilityId);
-                        return fac ? (
-                          <div key={fac.id} className="bg-surface px-2 py-1 border border-border flex items-center gap-2 text-[10px]">
-                            <Layers className="w-3 h-3 text-primary" />
-                            <span className="font-medium">{fac.type} - ${fac.amount.toLocaleString()}</span>
-                            <button onClick={() => toggleLink(fac.id, c.id)} className="text-text-secondary hover:text-danger">
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ) : null;
-                      })}
-                      {links.filter(l => l.collateralId === c.id).length === 0 && (
-                        <p className="text-[10px] text-text-secondary italic">Not linked to any facility</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Deviations & Exceptions */}
-          <div className="carbon-card border-l-4 border-danger">
-            <h3 className="text-xs font-semibold mb-4 uppercase tracking-wide flex items-center gap-2 text-danger">
-              <AlertTriangle className="w-4 h-4" /> Policy Deviations (2)
-            </h3>
-            <div className="space-y-3">
-              <div className="p-3 bg-danger/5 border border-danger/10 flex justify-between items-center">
-                <div>
-                  <p className="text-xs font-bold">Pricing Floor Breach</p>
-                  <p className="text-[10px] text-text-secondary">Proposed SOFR + 2.0% is below the policy floor of SOFR + 2.25%</p>
-                </div>
-                <span className="text-[10px] font-bold text-danger">Level 2 Approval Required</span>
-              </div>
-              <div className="p-3 bg-danger/5 border border-danger/10 flex justify-between items-center">
-                <div>
-                  <p className="text-xs font-bold">Collateral Shortfall</p>
-                  <p className="text-[10px] text-text-secondary">LTV of 85% exceeds the maximum policy limit of 80%</p>
-                </div>
-                <span className="text-[10px] font-bold text-danger">Risk Head Approval Required</span>
-              </div>
-            </div>
-          </div>
+            ))}
+          </nav>
         </div>
 
-        {/* Right Column: Actions & Checklist */}
-        <div className="col-span-12 lg:col-span-4 space-y-6">
-          <div className="carbon-card">
-            <h3 className="text-xs font-semibold mb-4 uppercase tracking-wide">Case Actions</h3>
-            <div className="space-y-2">
-              <button className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover transition-colors">
-                SUBMIT FOR RISK REVIEW
-              </button>
-              <button className="w-full bg-white border border-border text-text-primary py-2 text-xs font-bold hover:bg-surface-hover transition-colors">
-                RETURN TO RM
-              </button>
-              <button className="w-full bg-white border border-border text-danger py-2 text-xs font-bold hover:bg-danger/5 transition-colors">
-                DECLINE APPLICATION
-              </button>
-            </div>
-          </div>
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-y-auto p-8 bg-surface">
+          <div className="max-w-5xl mx-auto space-y-8 pb-24">
+            
+            {activeTab === "setup" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {/* Application Header */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <Info className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Application Header</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <FormField label="Customer Name" type="text" readonly defaultValue="Global Logistics Systems Corp." />
+                    <FormField label="ID Type" type="text" readonly defaultValue="NPWP" />
+                    <FormField label="Customer Type" type="text" readonly defaultValue="Corporate" />
+                    <FormField label="ID No." type="text" readonly defaultValue="88-2940219-X" />
+                  </div>
+                </section>
 
-          <div className="carbon-card">
-            <h3 className="text-xs font-semibold mb-4 uppercase tracking-wide">Document Checklist</h3>
-            <div className="space-y-3">
-              {[
-                { label: "Audited Financials FY23", status: "verified" },
-                { label: "Interim Financials Q1-24", status: "verified" },
-                { label: "Appraisal Report - Warehouse", status: "pending" },
-                { label: "Board Resolution", status: "missing" },
-              ].map((doc, i) => (
-                <div key={i} className="flex items-center justify-between text-xs">
-                  <span className="text-text-secondary">{doc.label}</span>
-                  <span className={`font-bold uppercase text-[9px] px-1.5 py-0.5 ${
-                    doc.status === 'verified' ? 'bg-success/10 text-success' :
-                    doc.status === 'pending' ? 'bg-warning/10 text-warning' :
-                    'bg-danger/10 text-danger'
-                  }`}>
-                    {doc.status}
-                  </span>
+                {/* Application Purpose */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <CheckSquare className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Application Purpose</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[
+                      "New", "Additional Plafond", "Changes Beyond Additional Plafond",
+                      "Partial Permanent Settlement", "Extension / Term Loan Review",
+                      "Restructure and Reschedule", "Loan Application (Without Changes)",
+                      "Cancellation for All Facility - Permanent", "Collateral Release",
+                      "Block Renewal", "Update Supporting Document"
+                    ].map(purpose => (
+                      <label key={purpose} className="flex items-center gap-3 p-3 bg-white border border-border hover:border-primary cursor-pointer transition-colors">
+                        <input type="checkbox" className="w-4 h-4 accent-primary" />
+                        <span className="text-xs font-medium">{purpose}</span>
+                      </label>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Application Control Fields */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <Activity className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Application Control Fields</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="space-y-4">
+                      <FormField label="Application Category" type="select" options={["Standard", "Express", "Fast Track"]} />
+                      <FormField label="Consent Product Owner (Non-RLP Product)?" type="select" options={["Yes", "No"]} />
+                      <FormField label="Is Term Loan?" type="select" options={["Yes", "No"]} />
+                      <FormField label="Approving Level" type="select" options={["Board", "Committee A", "Committee B"]} />
+                      <FormField label="Date Applied" type="date" />
+                      <FormField label="Appeal?" type="select" options={["No", "Yes"]} />
+                      <FormField label="Syariah Compliance?" type="text" readonly defaultValue="Non-Syariah" />
+                      <FormField label="Channel" type="text" readonly defaultValue="Direct" />
+                      <FormField label="Account Officer" type="text" readonly defaultValue="Sarah Jenkins" />
+                      <FormField label="BOC Approval" type="select" options={["Required", "Not Required"]} />
+                      <FormField label="Secured Indicator" type="select" options={["Secured", "Unsecured"]} />
+                      <FormField label="Take Over Customer?" type="select" options={["No", "Yes"]} />
+                      <FormField label="Applicant Not Listed in Negative List?" type="select" options={["Yes", "No"]} />
+                      <FormField label="Has Cost Submitted to Bank?" type="select" options={["Yes", "No"]} />
+                      <FormField label="Community Checking Completed?" type="select" options={["Yes", "No"]} />
+                      <FormField label="Checking Result" type="select" options={["Pass", "Fail"]} />
+                      <FormField label="Program Tagging" type="select" options={["None", "SME Special"]} />
+                    </div>
+                    <div className="space-y-4">
+                      <FormField label="Portfolio Update" type="select" options={["Yes", "No"]} />
+                      <FormField label="Lending Model / Program" type="select" options={["Corporate General", "SME Special"]} />
+                      <FormField label="Sust. Finance Risk" type="select" options={["Low", "Medium", "High"]} />
+                      <FormField label="Date Complete Document Received" type="date" />
+                      <FormField label="Account Strategy" type="select" options={["Retain", "Grow", "Exit"]} />
+                      <FormField label="RAC Block Renewal" type="text" readonly defaultValue="N/A" />
+                      <FormField label="Originating Unit" type="lookup" defaultValue="Main Branch Chicago" readonly />
+                      <FormField label="Call Report Ref No" type="text" readonly defaultValue="CR-2024-991" />
+                      <FormField label="Prescreening Required (For CRDE)?" type="select" options={["Yes", "No"]} />
+                      <div className="grid grid-cols-3 gap-2">
+                        <FormField label="Ongoing Facility" type="number" />
+                        <FormField label="Year(s)" type="number" />
+                        <FormField label="Month(s)" type="number" />
+                      </div>
+                      <FormField label="Applicant Listed in Restricted Industry?" type="select" options={["No", "Yes"]} />
+                      <FormField label="Community Checking Source Name" type="text" />
+                      <FormField label="Name of Manager/UBO" type="lookup" />
+                    </div>
+                  </div>
+                </section>
+
+                {/* Remarks & Referral */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <FileText className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Remarks & Referral</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField label="Collateral Remarks" type="textarea" />
+                    <FormField label="General Remarks" type="textarea" />
+                    <FormField label="Referral Source" type="select" options={["Internal", "External"]} />
+                    <FormField label="Referral Region" type="lookup" />
+                    <FormField label="Referral Branch" type="lookup" />
+                    <FormField label="Referral Code" type="text" />
+                    <FormField label="Referral Name" type="text" />
+                  </div>
+                </section>
+
+                {/* BMPK Details */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">BMPK Details (IDR Million)</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FormField label="BMPK Calculated - Debtor" type="number" />
+                    <FormField label="Date BMPK Calculated - Debtor" type="date" />
+                    <FormField label="BMPK Calculated - Debtor Group" type="number" />
+                    <FormField label="Date BMPK Calculated - Debtor Group" type="date" />
+                    <FormField label="BMPK Calculated - Related / Not Related Party" type="select" options={["Not Related", "Related"]} />
+                    <FormField label="Date BMPK Calculated - Related / Not Related Party" type="date" />
+                  </div>
+                </section>
+
+                {/* Industry MAT */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <LayoutList className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Industry MAT</h2>
+                  </div>
+                  <div className="carbon-card p-0 overflow-hidden">
+                    <table className="carbon-table">
+                      <thead>
+                        <tr>
+                          <th className="w-12">No.</th>
+                          <th>Industry MAT</th>
+                          <th>Date</th>
+                          <th>Entity</th>
+                          <th className="text-right">Available Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="text-center font-mono text-[10px]">1</td>
+                          <td><select className="w-full bg-transparent border-none text-xs"><option>Logistics & Transport</option></select></td>
+                          <td><input type="month" className="w-full bg-transparent border-none text-xs" /></td>
+                          <td><select className="w-full bg-transparent border-none text-xs"><option>Global Logistics Corp</option></select></td>
+                          <td><input type="text" className="w-full bg-transparent border-none text-xs text-right" placeholder="0.00" /></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                {/* Sector Exposure Industry */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <Activity className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Sector Exposure Industry</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="carbon-card p-0 overflow-hidden">
+                      <table className="carbon-table">
+                        <thead>
+                          <tr>
+                            <th className="w-12">No.</th>
+                            <th>Exposure Industry Debtor</th>
+                            <th>Date (As Of)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="text-center font-mono text-[10px]">1</td>
+                            <td><input type="text" className="w-full bg-transparent border-none text-xs" /></td>
+                            <td><input type="month" className="w-full bg-transparent border-none text-xs" /></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="carbon-card p-0 overflow-hidden">
+                      <table className="carbon-table">
+                        <thead>
+                          <tr>
+                            <th className="w-12">No.</th>
+                            <th>Exposure Industry After Enhancement</th>
+                            <th>Date (As Of)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="text-center font-mono text-[10px]">1</td>
+                            <td><input type="text" className="w-full bg-transparent border-none text-xs" /></td>
+                            <td><input type="month" className="w-full bg-transparent border-none text-xs" /></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === "compliance" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {/* BMPK Details - Moved to Setup as requested */}
+                
+                {/* Credit Check Result */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <Search className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Credit Check Result</h2>
+                  </div>
+                  <div className="carbon-card p-0 overflow-hidden">
+                    <table className="carbon-table">
+                      <thead>
+                        <tr>
+                          <th className="w-12">No.</th>
+                          <th>Customer / Related Name</th>
+                          <th>ID Type</th>
+                          <th>ID No.</th>
+                          <th>SLIK Request Details</th>
+                          <th>Status</th>
+                          <th>BWCCS</th>
+                          <th className="text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-xs">
+                        <tr>
+                          <td className="text-center font-mono text-[10px]">1</td>
+                          <td className="font-bold">Global Logistics Systems Corp. (Self)</td>
+                          <td>NPWP</td>
+                          <td>88-2940219-X</td>
+                          <td className="py-2">
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[9px] text-text-secondary">
+                              <span>NPWP: 88.294.021.9-X</span>
+                              <span>Reg No: 12345678</span>
+                              <span>Purpose: New Loan</span>
+                              <span>NIK: -</span>
+                            </div>
+                          </td>
+                          <td><span className="bg-success/10 text-success px-2 py-0.5 rounded text-[10px] font-bold">CLEAN</span></td>
+                          <td>PASS</td>
+                          <td className="text-right">
+                            <div className="flex flex-col gap-1 items-end">
+                              <button className="text-primary text-[9px] font-bold hover:underline">RETRIEVE REPORT</button>
+                              <button className="text-text-secondary text-[9px] font-bold hover:underline">EDIT</button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                {/* Policy Checklist */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <ClipboardCheck className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Policy Monitoring Checklist</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <FormField label="Debtor Name" type="text" readonly defaultValue="Global Logistics Systems Corp." />
+                    <FormField label="CF No." type="text" readonly defaultValue="CF-99201" />
+                    <FormField label="Group" type="text" readonly defaultValue="Logistics Global Group" />
+                    <FormField label="ICR" type="text" readonly defaultValue="BBB+" />
+                    <FormField label="Currency" type="text" readonly defaultValue="USD" />
+                    <FormField label="Total Plafond" type="currency" readonly defaultValue="15,000,000" />
+                    <FormField label="Total Plafond Fully Secured" type="currency" readonly defaultValue="12,000,000" />
+                    <FormField label="Initiator Name" type="text" readonly defaultValue="Sarah Jenkins" />
+                    <FormField label="BCT Name" type="text" />
+                    <FormField label="Originating Unit" type="text" readonly defaultValue="Main Branch Chicago" />
+                    <FormField label="Approved Date" type="date" />
+                    <FormField label="Approving Authority" type="lookup" />
+                    <FormField label="Approved By" type="lookup" />
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="carbon-card bg-white">
+                      <h3 className="text-[10px] font-bold uppercase text-primary mb-4">Credit Policy Exceptions</h3>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {["Pricing Below Floor", "LTV Breach", "Tenor Extension", "Financial Covenant Waiver"].map(item => (
+                            <label key={item} className="flex items-center gap-3 text-xs">
+                              <input type="checkbox" className="w-4 h-4 accent-primary" /> {item}
+                            </label>
+                          ))}
+                        </div>
+                        <FormField label="Justification" type="textarea" placeholder="Provide justification for exceptions..." />
+                      </div>
+                    </div>
+
+                    <div className="carbon-card bg-white">
+                      <h3 className="text-[10px] font-bold uppercase text-primary mb-4">High Risk Credits</h3>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {["Sensitive Industry", "Negative Equity", "High Leverage", "Political Exposed Person"].map(item => (
+                            <div key={item} className="flex items-center justify-between gap-4">
+                              <label className="flex items-center gap-3 text-xs">
+                                <input type="checkbox" className="w-4 h-4 accent-primary" /> {item}
+                              </label>
+                              <input type="text" className="bg-surface border border-border text-[10px] p-1 w-24 text-right" placeholder="IDR 0.00" />
+                            </div>
+                          ))}
+                        </div>
+                        <FormField label="Justification" type="textarea" placeholder="Provide justification for high risk..." />
+                      </div>
+                    </div>
+
+                    <div className="carbon-card bg-white">
+                      <h3 className="text-[10px] font-bold uppercase text-primary mb-4">Special Consideration Credits</h3>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {["Strategic Importance", "Cross-Sell Potential", "New Market Entry"].map(item => (
+                            <label key={item} className="flex items-center gap-3 text-xs">
+                              <input type="checkbox" className="w-4 h-4 accent-primary" /> {item}
+                            </label>
+                          ))}
+                        </div>
+                        <FormField label="Justification" type="textarea" placeholder="Provide justification for special consideration..." />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Deviasi RAC */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <AlertTriangle className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Deviasi RAC Matrix</h2>
+                  </div>
+                  <div className="carbon-card p-0 overflow-hidden">
+                    <table className="carbon-table">
+                      <thead>
+                        <tr>
+                          <th>RAC Criteria</th>
+                          <th>Business Unit Input</th>
+                          <th>Business Unit Remark</th>
+                          <th>BCM Input</th>
+                          <th>CRDE Deviation</th>
+                          <th>CRDE Remark</th>
+                          <th>Final Deviation</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-xs">
+                        <tr>
+                          <td className="font-bold">Current Ratio {'>'} 1.2x</td>
+                          <td>1.15x</td>
+                          <td>Seasonal dip in receivables</td>
+                          <td>1.15x</td>
+                          <td><span className="text-danger font-bold">DEVIATED</span></td>
+                          <td>Accepted based on group support</td>
+                          <td><span className="text-warning font-bold">WAIVED</span></td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold">Years in Business {'>'} 5</td>
+                          <td>15 Years</td>
+                          <td>Established market leader</td>
+                          <td>15 Years</td>
+                          <td><span className="text-success font-bold">MATCH</span></td>
+                          <td>Verified</td>
+                          <td><span className="text-success font-bold">MATCH</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === "facilities" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3 border-b border-border pb-2 flex-1">
+                    <Layers className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Facility Listing</h2>
+                  </div>
+                  <button 
+                    onClick={() => setIsFacilityModalOpen(true)}
+                    className="ml-4 bg-primary text-white px-4 py-2 text-xs font-bold flex items-center gap-2 hover:bg-primary-hover transition-colors"
+                  >
+                    <Plus className="w-4 h-4" /> ADD FACILITY
+                  </button>
                 </div>
-              ))}
-            </div>
-            <button className="w-full mt-4 text-primary text-[11px] font-bold flex items-center justify-center gap-1 hover:underline">
-              <Plus className="w-3 h-3" /> UPLOAD DOCUMENT
-            </button>
+
+                <div className="carbon-card p-0 overflow-hidden">
+                  <table className="carbon-table">
+                    <thead>
+                      <tr>
+                        <th className="w-12">No.</th>
+                        <th>Customer Name</th>
+                        <th>Product</th>
+                        <th>Facility</th>
+                        <th>Abbr.</th>
+                        <th>Entity</th>
+                        <th>B2B?</th>
+                        <th>Account No.</th>
+                        <th>Currency</th>
+                        <th className="text-right">Proposed Limit</th>
+                        <th className="text-right">Approved Limit</th>
+                        <th>Status</th>
+                        <th>Linkage</th>
+                        <th className="w-12"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {facilities.map((f, i) => (
+                        <tr key={f.id}>
+                          <td className="text-center font-mono text-[10px]">{i + 1}</td>
+                          <td className="text-xs">Global Logistics</td>
+                          <td className="font-bold">{f.type}</td>
+                          <td>{f.type} - {f.id}</td>
+                          <td className="font-mono text-[10px]">TL-00{f.id}</td>
+                          <td>Global Logistics Corp</td>
+                          <td>No</td>
+                          <td>1234567890</td>
+                          <td>{f.currency}</td>
+                          <td className="text-right font-bold">{f.amount.toLocaleString()}</td>
+                          <td className="text-right font-bold text-success">{f.amount.toLocaleString()}</td>
+                          <td><span className="bg-warning/10 text-warning px-2 py-0.5 rounded text-[10px] font-bold uppercase">{f.status}</span></td>
+                          <td className="text-center">
+                            <button className="text-primary hover:underline text-[10px] font-bold">VIEW</button>
+                          </td>
+                          <td>
+                            <button className="text-text-secondary hover:text-danger"><Trash2 className="w-4 h-4" /></button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Account Outstanding Update History */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="carbon-card bg-white">
+                    <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Account Outstanding Update History</h3>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between border-b border-surface py-1">
+                        <span className="text-text-secondary">Last Triggered By</span>
+                        <span className="font-bold">SYSTEM</span>
+                      </div>
+                      <div className="flex justify-between border-b border-surface py-1">
+                        <span className="text-text-secondary">Triggered Date</span>
+                        <span className="font-bold">2024-04-10 09:00</span>
+                      </div>
+                      <div className="flex justify-between border-b border-surface py-1">
+                        <span className="text-text-secondary">Status</span>
+                        <span className="text-success font-bold">SUCCESS</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="carbon-card bg-white">
+                    <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Credit Limit Check</h3>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-text-secondary">Counter</span>
+                      <span className="text-sm font-bold">3</span>
+                    </div>
+                    <button className="w-full mt-4 bg-surface border border-border py-2 text-xs font-bold hover:bg-white transition-colors">
+                      RUN LIMIT CHECK
+                    </button>
+                  </div>
+                </div>
+
+                {/* Credit Limit Check Listing */}
+                <div className="carbon-card p-0 overflow-hidden">
+                  <h3 className="p-4 text-[10px] font-bold uppercase text-text-secondary border-b border-border">Credit Limit Check Listing</h3>
+                  <table className="carbon-table">
+                    <thead>
+                      <tr>
+                        <th className="w-12">No.</th>
+                        <th>Fac. Abbr.</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Remark</th>
+                        <th>Triggered By</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-xs">
+                      <tr>
+                        <td className="text-center font-mono text-[10px]">1</td>
+                        <td>TL-LOG</td>
+                        <td>Limit Check</td>
+                        <td><span className="text-success font-bold">PASS</span></td>
+                        <td>Within group limit</td>
+                        <td>Sarah Jenkins</td>
+                        <td>2024-04-10</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Collateral Linkage Preview */}
+                <div className="carbon-card p-0 overflow-hidden">
+                  <h3 className="p-4 text-[10px] font-bold uppercase text-text-secondary border-b border-border">Collateral Linkage Preview</h3>
+                  <table className="carbon-table">
+                    <thead>
+                      <tr>
+                        <th className="w-12">No.</th>
+                        <th>Customer Name</th>
+                        <th>Fac. Abbr.</th>
+                        <th>Coll. Abbr.</th>
+                        <th>Coll. Code</th>
+                        <th className="text-right">Coll. Value</th>
+                        <th>Rank</th>
+                        <th className="text-right">Coverage Value</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-xs">
+                      {links.map((link, i) => {
+                        const fac = facilities.find(f => f.id === link.facilityId);
+                        const col = collaterals.find(c => c.id === link.collateralId);
+                        return fac && col ? (
+                          <tr key={i}>
+                            <td className="text-center font-mono text-[10px]">{i + 1}</td>
+                            <td>Global Logistics</td>
+                            <td>TL-00{fac.id}</td>
+                            <td>{col.type.substring(0, 3).toUpperCase()}</td>
+                            <td>{col.code}</td>
+                            <td className="text-right">${col.value.toLocaleString()}</td>
+                            <td className="text-center">1</td>
+                            <td className="text-right font-bold">${(col.value * 0.8).toLocaleString()}</td>
+                          </tr>
+                        ) : null;
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Facility Creation Control */}
+                <div className="carbon-card bg-white">
+                  <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Facility Creation Control</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                    <FormField label="Select Product" type="select" options={["Term Loan", "Working Capital", "Trade Finance"]} />
+                    <FormField label="Select Facility" type="select" options={["Revolving", "Non-Revolving"]} />
+                    <button className="bg-surface border border-border py-2 text-xs font-bold hover:bg-white transition-colors">
+                      ADD TO LISTING
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "collaterals" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3 border-b border-border pb-2 flex-1">
+                    <ShieldCheck className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Collateral Listing</h2>
+                  </div>
+                  <button 
+                    onClick={() => setIsCollateralModalOpen(true)}
+                    className="ml-4 bg-primary text-white px-4 py-2 text-xs font-bold flex items-center gap-2 hover:bg-primary-hover transition-colors"
+                  >
+                    <Plus className="w-4 h-4" /> ADD COLLATERAL
+                  </button>
+                </div>
+
+                <div className="carbon-card p-0 overflow-hidden">
+                  <table className="carbon-table">
+                    <thead>
+                      <tr>
+                        <th className="w-12">No.</th>
+                        <th>SIBS ID</th>
+                        <th>SYARIAH ID</th>
+                        <th>Abbr.</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Code</th>
+                        <th className="text-right">Value</th>
+                        <th className="w-12"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {collaterals.map((c, i) => (
+                        <tr key={c.id}>
+                          <td className="text-center font-mono text-[10px]">{i + 1}</td>
+                          <td className="font-mono text-[10px]">SIBS-{c.id}</td>
+                          <td className="font-mono text-[10px]">SYR-{c.id}</td>
+                          <td className="font-bold text-[10px]">{c.type.substring(0, 3).toUpperCase()}</td>
+                          <td className="text-xs">{c.type}</td>
+                          <td className="text-xs">Main</td>
+                          <td className="font-mono text-[10px]">{c.code}</td>
+                          <td className="text-right font-bold">${c.value.toLocaleString()}</td>
+                          <td>
+                            <button className="text-text-secondary hover:text-danger"><Trash2 className="w-4 h-4" /></button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Collateral Action Control */}
+                <div className="carbon-card bg-white">
+                  <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Collateral Action Control</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                    <FormField label="Select Collateral Type" type="select" options={["Real Estate", "Vehicle", "Cash", "Guarantee"]} className="lg:col-span-2" />
+                    <button className="bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover">ADD</button>
+                    <button className="bg-white border border-border py-2 text-xs font-bold hover:bg-surface">INQUIRY</button>
+                    <button className="bg-white border border-border py-2 text-xs font-bold hover:bg-surface">CREATE ORDER</button>
+                  </div>
+                </div>
+
+                {/* Collateral Transaction History */}
+                <div className="carbon-card p-0 overflow-hidden">
+                  <h3 className="p-4 text-[10px] font-bold uppercase text-text-secondary border-b border-border">Transaction History Listing</h3>
+                  <table className="carbon-table">
+                    <thead>
+                      <tr>
+                        <th className="w-12">No.</th>
+                        <th>Appraisal No.</th>
+                        <th>SIBS ID</th>
+                        <th>Abbr.</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Triggered By</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-xs">
+                      <tr>
+                        <td className="text-center font-mono text-[10px]">1</td>
+                        <td>APR-99201</td>
+                        <td>SIBS-1</td>
+                        <td>REA</td>
+                        <td>Real Estate</td>
+                        <td>Initial Valuation</td>
+                        <td>Sarah Jenkins</td>
+                        <td>2024-04-10</td>
+                        <td><span className="text-success font-bold">COMPLETED</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Collateral Linkage & Coverage */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <LinkIcon className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Collateral Linkage & Coverage</h2>
+                  </div>
+                  
+                  <div className="carbon-card bg-white">
+                    <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Linkage Control</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                      <FormField label="Select Own Collateral" type="select" options={collaterals.map(c => c.type)} />
+                      <FormField label="Select Cross Collateral" type="lookup" />
+                      <button className="bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover">ADD LINKAGE</button>
+                    </div>
+                  </div>
+
+                  <div className="carbon-card p-0 overflow-hidden">
+                    <table className="carbon-table">
+                      <thead>
+                        <tr>
+                          <th>Facility</th>
+                          <th>Collateral</th>
+                          <th className="text-right">Coll. Value</th>
+                          <th className="text-center">Rank</th>
+                          <th className="text-right">Coverage Value</th>
+                          <th className="text-right">Haircut Value</th>
+                          <th className="text-center">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {links.map((link, i) => {
+                          const fac = facilities.find(f => f.id === link.facilityId);
+                          const col = collaterals.find(c => c.id === link.collateralId);
+                          return fac && col ? (
+                            <tr key={i}>
+                              <td className="font-bold text-xs">{fac.type}</td>
+                              <td className="text-xs">{col.type} ({col.code})</td>
+                              <td className="text-right font-mono text-xs">${col.value.toLocaleString()}</td>
+                              <td className="text-center text-xs">1</td>
+                              <td className="text-right font-mono text-xs">${(col.value * 0.8).toLocaleString()}</td>
+                              <td className="text-right font-mono text-xs text-danger">${(col.value * 0.2).toLocaleString()}</td>
+                              <td className="text-center">
+                                <button onClick={() => toggleLink(fac.id, col.id)} className="text-danger hover:underline text-[10px] font-bold">UNLINK</button>
+                              </td>
+                            </tr>
+                          ) : null;
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Coverage Summary */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="carbon-card bg-white">
+                      <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Collateral Coverage Summary</h3>
+                      <div className="space-y-2 text-xs">
+                        {["Real Estate", "Machine / Vehicle", "Receivables", "Inventory", "Cash Collateral", "Others"].map(item => (
+                          <div key={item} className="flex justify-between border-b border-surface py-1">
+                            <span className="text-text-secondary">{item} (%)</span>
+                            <span className="font-bold">{item === "Real Estate" ? "80%" : "0%"}</span>
+                          </div>
+                        ))}
+                        <div className="flex justify-between pt-2 border-t border-border mt-2">
+                          <span className="font-bold text-primary">Total (%)</span>
+                          <span className="font-bold text-primary">80%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="carbon-card p-0 overflow-hidden">
+                      <h3 className="p-4 text-[10px] font-bold uppercase text-text-secondary border-b border-border">Coverage Company Group</h3>
+                      <table className="carbon-table">
+                        <thead>
+                          <tr>
+                            <th>Debitur</th>
+                            <th className="text-right">RE (%)</th>
+                            <th className="text-right">Total (%)</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-[10px]">
+                          <tr>
+                            <td>Global Logistics</td>
+                            <td className="text-right">80%</td>
+                            <td className="text-right font-bold">80%</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === "verification" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {/* Field Investigation */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <FileSearch className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Field Investigation</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <FormField label="Result Verified?" type="select" options={["Yes", "No"]} />
+                    <FormField label="Located in Jabodetabek" type="select" options={["Yes", "No"]} />
+                    <FormField label="Distance from Branch (Km)" type="number" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="carbon-card bg-white">
+                      <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Input by Account Officer</h3>
+                      <div className="space-y-4">
+                        <FormField label="Result Verified?" type="select" options={["Yes", "No"]} />
+                        <FormField label="Located in Jabodetabek" type="select" options={["Yes", "No"]} />
+                        <FormField label="Distance from Branch (Km)" type="number" />
+                        <button className="text-primary text-[10px] font-bold hover:underline">VIEW INVESTIGATION FORM</button>
+                      </div>
+                    </div>
+                    <div className="carbon-card bg-white">
+                      <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Input by CIAS</h3>
+                      <div className="space-y-4">
+                        <FormField label="Result Verified?" type="select" options={["Yes", "No"]} />
+                        <FormField label="Located in Jabodetabek" type="select" options={["Yes", "No"]} />
+                        <FormField label="Distance from Branch (Km)" type="number" />
+                        <button className="text-primary text-[10px] font-bold hover:underline">VIEW INVESTIGATION FORM</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button className="px-4 py-2 bg-primary text-white text-xs font-bold hover:bg-primary-hover">UPDATE</button>
+                    <button className="px-4 py-2 bg-white border border-border text-xs font-bold hover:bg-surface">INQUIRY</button>
+                    <button className="px-4 py-2 bg-white border border-border text-xs font-bold hover:bg-surface">CREATE ORDER</button>
+                    <button className="px-4 py-2 bg-white border border-border text-xs font-bold hover:bg-surface">UPDATE TO NAG</button>
+                  </div>
+
+                  <div className="carbon-card p-0 overflow-hidden">
+                    <h3 className="p-4 text-[10px] font-bold uppercase text-text-secondary border-b border-border">Transaction History Listing</h3>
+                    <table className="carbon-table">
+                      <thead>
+                        <tr>
+                          <th className="w-12">No.</th>
+                          <th>Appraisal No.</th>
+                          <th>Customer Name</th>
+                          <th>Description</th>
+                          <th>Triggered By</th>
+                          <th>Date</th>
+                          <th>Status</th>
+                          <th>Reason</th>
+                          <th>Final?</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-xs">
+                        <tr>
+                          <td className="text-center font-mono text-[10px]">1</td>
+                          <td>APR-99201</td>
+                          <td>Global Logistics</td>
+                          <td>Initial Appraisal</td>
+                          <td>Sarah Jenkins</td>
+                          <td>2024-04-01</td>
+                          <td><span className="text-success font-bold">COMPLETED</span></td>
+                          <td>-</td>
+                          <td>Yes</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                {/* Decision - Prescreening */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <History className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Decision - Prescreening</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <FormField label="Prescreening Counter" type="text" readonly defaultValue="1" />
+                    <FormField label="Prescreening Date" type="text" readonly defaultValue="2024-04-10 14:22" />
+                    <FormField label="Checked By" type="text" readonly defaultValue="SYSTEM" />
+                    <FormField label="Result" type="text" readonly defaultValue="PROCEED" className="text-success font-bold" />
+                    <button className="text-primary text-[10px] font-bold hover:underline self-end pb-2">VIEW XML</button>
+                  </div>
+
+                  <div className="carbon-card p-0 overflow-hidden">
+                    <h3 className="p-4 text-[10px] font-bold uppercase text-text-secondary border-b border-border">Prescreening Business Rules</h3>
+                    <table className="carbon-table">
+                      <thead>
+                        <tr>
+                          <th className="w-12">No.</th>
+                          <th>Rule No</th>
+                          <th>CRDE Decision</th>
+                          <th>Reason</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-xs">
+                        <tr>
+                          <td className="text-center font-mono text-[10px]">1</td>
+                          <td>BR-001</td>
+                          <td><span className="text-success font-bold">PASS</span></td>
+                          <td>Customer not in negative list</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="carbon-card bg-white">
+                    <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Flow Routing Reasons</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField label="Officer Flow Routing Reason" type="text" readonly defaultValue="Standard Route" />
+                      <FormField label="Flow Routing Category" type="select" options={["Normal", "Urgent", "Special"]} />
+                      <FormField label="Flow Routing Reason" type="lookup" />
+                      <FormField label="Other Flow Routing Reason" type="textarea" />
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === "summary" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <LayoutList className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Facility Information Summary</h2>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    <div className="lg:col-span-8 space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <FormField label="Product" type="text" readonly defaultValue="Term Loan" />
+                        <FormField label="SIBS Facility ID" type="text" readonly defaultValue="FAC-99201" />
+                        <FormField label="Facility Abbreviation" type="text" readonly defaultValue="TL-LOG" />
+                        <FormField label="Facility Package" type="text" readonly defaultValue="Logistics Growth" />
+                        <FormField label="Campaign" type="text" readonly defaultValue="None" />
+                        <FormField label="Existing Facility?" type="text" readonly defaultValue="No" />
+                        <FormField label="Industry Type" type="text" readonly defaultValue="Transport" />
+                        <FormField label="Term Of Payment" type="text" readonly defaultValue="Monthly" />
+                        <FormField label="Loan Characteristic" type="text" readonly defaultValue="Standard" />
+                        <FormField label="Facility Account No." type="text" readonly defaultValue="1234567890" />
+                        <FormField label="Currency" type="text" readonly defaultValue="USD" />
+                        <FormField label="Maturity" type="text" readonly defaultValue="2029-04-10" />
+                        <FormField label="Program Tagging" type="text" readonly defaultValue="SME Special" />
+                        <FormField label="Agreement / Waad No." type="text" readonly defaultValue="AGR-2024-001" />
+                      </div>
+
+                      <div className="carbon-card bg-white">
+                        <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Facility Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <FormField label="Repayment Type" type="text" readonly defaultValue="Installment" />
+                          <FormField label="Installment Commencement" type="text" readonly defaultValue="Month 1" />
+                          <FormField label="Installment Option" type="text" readonly defaultValue="Fixed" />
+                          <FormField label="Grace Period" type="text" readonly defaultValue="6 Months" />
+                          <FormField label="Interest Frequency" type="text" readonly defaultValue="Monthly" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="lg:col-span-4 space-y-6">
+                      <div className="carbon-card bg-white">
+                        <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Drawdown Information</h3>
+                        <div className="space-y-3 text-xs">
+                          <div className="flex justify-between border-b border-surface py-1">
+                            <span className="text-text-secondary">Islamic Financing?</span>
+                            <span className="font-bold">No</span>
+                          </div>
+                          <div className="flex justify-between border-b border-surface py-1">
+                            <span className="text-text-secondary">Pricing Option</span>
+                            <span className="font-bold">Floating</span>
+                          </div>
+                          <div className="flex justify-between border-b border-surface py-1">
+                            <span className="text-text-secondary">Principal</span>
+                            <span className="font-bold">$10,000,000</span>
+                          </div>
+                          <div className="flex justify-between border-b border-surface py-1">
+                            <span className="text-text-secondary">Product Program</span>
+                            <span className="font-bold">Corporate General</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="carbon-card bg-white">
+                        <h3 className="text-[10px] font-bold uppercase text-text-secondary mb-4">Financing Amount Details</h3>
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center py-2 border-b border-surface">
+                            <span className="text-xs text-text-secondary">Original Limit</span>
+                            <span className="text-sm font-bold">$10,000,000.00</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-surface">
+                            <span className="text-xs text-text-secondary">Existing Limit</span>
+                            <span className="text-sm font-bold">$0.00</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-surface">
+                            <span className="text-xs text-text-secondary">Proposed Limit</span>
+                            <span className="text-sm font-bold text-primary">$10,000,000.00</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
           </div>
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Modals - Reusing previous logic */}
       {isFacilityModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-md shadow-2xl">
@@ -353,55 +1079,13 @@ export default function ApplicationCase() {
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <div>
-                <label className="carbon-label">Facility Type</label>
-                <select 
-                  value={newFacility.type}
-                  onChange={(e) => setNewFacility({...newFacility, type: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                >
-                  <option>Term Loan</option>
-                  <option>Working Capital Line</option>
-                  <option>Letter of Credit</option>
-                  <option>Bank Guarantee</option>
-                </select>
-              </div>
-              <div>
-                <label className="carbon-label">Amount (USD)</label>
-                <input 
-                  type="number" 
-                  value={newFacility.amount}
-                  onChange={(e) => setNewFacility({...newFacility, amount: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                  placeholder="0.00"
-                />
-              </div>
+              <FormField label="Facility Type" type="select" options={["Term Loan", "Working Capital Line", "Letter of Credit", "Bank Guarantee"]} />
+              <FormField label="Amount (USD)" type="number" placeholder="0.00" />
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="carbon-label">Tenor</label>
-                  <input 
-                    type="text" 
-                    value={newFacility.tenor}
-                    onChange={(e) => setNewFacility({...newFacility, tenor: e.target.value})}
-                    className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                    placeholder="e.g. 60 Months"
-                  />
-                </div>
-                <div>
-                  <label className="carbon-label">Pricing</label>
-                  <input 
-                    type="text" 
-                    value={newFacility.pricing}
-                    onChange={(e) => setNewFacility({...newFacility, pricing: e.target.value})}
-                    className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                    placeholder="e.g. SOFR + 2.5%"
-                  />
-                </div>
+                <FormField label="Tenor" type="text" placeholder="e.g. 60 Months" />
+                <FormField label="Pricing" type="text" placeholder="e.g. SOFR + 2.5%" />
               </div>
-              <button 
-                onClick={addFacility}
-                className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4"
-              >
+              <button className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4">
                 ADD FACILITY
               </button>
             </div>
@@ -419,43 +1103,10 @@ export default function ApplicationCase() {
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <div>
-                <label className="carbon-label">Collateral Type</label>
-                <select 
-                  value={newCollateral.type}
-                  onChange={(e) => setNewCollateral({...newCollateral, type: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                >
-                  <option>Real Estate</option>
-                  <option>Corporate Guarantee</option>
-                  <option>Cash Deposit</option>
-                  <option>Inventory & Receivables</option>
-                  <option>Machinery & Equipment</option>
-                </select>
-              </div>
-              <div>
-                <label className="carbon-label">Market Value (USD)</label>
-                <input 
-                  type="number" 
-                  value={newCollateral.value}
-                  onChange={(e) => setNewCollateral({...newCollateral, value: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                  placeholder="0.00"
-                />
-              </div>
-              <div>
-                <label className="carbon-label">Description</label>
-                <textarea 
-                  value={newCollateral.description}
-                  onChange={(e) => setNewCollateral({...newCollateral, description: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none h-24"
-                  placeholder="Details about the collateral..."
-                />
-              </div>
-              <button 
-                onClick={addCollateral}
-                className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4"
-              >
+              <FormField label="Collateral Type" type="select" options={["Real Estate", "Corporate Guarantee", "Cash Deposit", "Inventory & Receivables"]} />
+              <FormField label="Market Value (USD)" type="number" placeholder="0.00" />
+              <FormField label="Description" type="textarea" placeholder="Details about the collateral..." />
+              <button className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4">
                 ADD COLLATERAL
               </button>
             </div>
@@ -467,59 +1118,75 @@ export default function ApplicationCase() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center p-4 border-b border-border">
-              <h2 className="text-sm font-bold uppercase tracking-wider">Link Assets</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider">Manage Linkages</h2>
               <button onClick={() => setIsLinkModalOpen(false)} className="text-text-secondary hover:text-text-primary">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <div>
-                <label className="carbon-label">Step 1: Select Collateral</label>
-                <select 
-                  value={linkData.collateralId}
-                  onChange={(e) => setLinkData({...linkData, collateralId: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                >
-                  <option value="">Select a collateral...</option>
-                  {collaterals.map(c => (
-                    <option key={c.id} value={c.id}>{c.type} - ${c.value.toLocaleString()}</option>
-                  ))}
-                </select>
+              <FormField label="Select Collateral" type="select" options={collaterals.map(c => `${c.type} (${c.code})`)} />
+              <div className="space-y-2 mt-2 max-h-48 overflow-y-auto border border-border p-2 bg-surface">
+                {facilities.map(f => (
+                  <label key={f.id} className="flex items-center gap-3 p-2 hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-border">
+                    <input type="checkbox" className="w-4 h-4 accent-primary" />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold">{f.type}</span>
+                      <span className="text-[10px] text-text-secondary">FAC-00{f.id} • ${f.amount.toLocaleString()}</span>
+                    </div>
+                  </label>
+                ))}
               </div>
-              
-              {linkData.collateralId && (
-                <div>
-                  <label className="carbon-label">Step 2: Select Facilities to Secure</label>
-                  <div className="space-y-2 mt-2 max-h-48 overflow-y-auto border border-border p-2 bg-surface">
-                    {facilities.map(f => {
-                      const isLinked = links.some(l => l.facilityId === f.id && l.collateralId === Number(linkData.collateralId));
-                      return (
-                        <label key={f.id} className="flex items-center gap-3 p-2 hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-border">
-                          <input 
-                            type="checkbox"
-                            checked={isLinked}
-                            onChange={() => toggleLink(f.id, Number(linkData.collateralId))}
-                            className="w-4 h-4 accent-primary"
-                          />
-                          <div className="flex flex-col">
-                            <span className="text-xs font-bold">{f.type}</span>
-                            <span className="text-[10px] text-text-secondary">FAC-00{f.id} • ${f.amount.toLocaleString()}</span>
-                          </div>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              <button 
-                onClick={() => setIsLinkModalOpen(false)}
-                className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4"
-              >
+              <button onClick={() => setIsLinkModalOpen(false)} className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4">
                 DONE
               </button>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FormField({ label, type, options, placeholder, readonly, defaultValue, className = "" }: any) {
+  return (
+    <div className={`flex flex-col gap-1.5 ${className}`}>
+      <label className="carbon-label">{label}</label>
+      {type === "select" ? (
+        <select 
+          disabled={readonly}
+          defaultValue={defaultValue}
+          className="w-full bg-white border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none disabled:bg-surface"
+        >
+          {options.map((opt: string) => <option key={opt}>{opt}</option>)}
+        </select>
+      ) : type === "textarea" ? (
+        <textarea 
+          readOnly={readonly}
+          defaultValue={defaultValue}
+          className="w-full bg-white border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none min-h-[80px]"
+          placeholder={placeholder}
+        />
+      ) : type === "lookup" ? (
+        <div className="relative">
+          <input 
+            readOnly={readonly}
+            type="text" 
+            defaultValue={defaultValue}
+            className="w-full bg-white border border-border p-2 pr-8 text-xs focus:ring-1 focus:ring-primary outline-none"
+            placeholder={placeholder || "Search..."}
+          />
+          <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-secondary" />
+        </div>
+      ) : (
+        <div className="relative">
+          <input 
+            readOnly={readonly}
+            type={type} 
+            defaultValue={defaultValue}
+            className="w-full bg-white border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none disabled:bg-surface"
+            placeholder={placeholder}
+          />
+          {type === "currency" && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-text-secondary">IDR</span>}
         </div>
       )}
     </div>
