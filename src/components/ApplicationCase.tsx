@@ -25,6 +25,7 @@ import {
 import { motion } from "motion/react";
 
 import CollateralDetailForm from "./CollateralDetailForm";
+import FacilityDetailForm from "./FacilityDetailForm";
 
 const stages = [
   { id: "origination", label: "Origination", status: "completed" },
@@ -85,6 +86,7 @@ export default function ApplicationCase() {
   const [isFacilityModalOpen, setIsFacilityModalOpen] = useState(false);
   const [isCollateralModalOpen, setIsCollateralModalOpen] = useState(false);
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [appSegment, setAppSegment] = useState<'SME' | 'COMBA' | 'COBA'>('COMBA');
 
   const toggleLink = (fId: number, cId: number) => {
     const exists = links.find(l => l.facilityId === fId && l.collateralId === cId);
@@ -522,6 +524,18 @@ export default function ApplicationCase() {
                   <div className="flex items-center gap-3 border-b border-border pb-2 flex-1">
                     <Layers className="w-5 h-5 text-primary" />
                     <h2 className="text-sm font-bold uppercase tracking-widest">Facility Listing</h2>
+                    <div className="ml-4 flex items-center gap-2 bg-surface px-3 py-1 rounded border border-border">
+                      <span className="text-[10px] font-bold text-text-secondary uppercase">Segment:</span>
+                      <select 
+                        value={appSegment}
+                        onChange={(e) => setAppSegment(e.target.value as any)}
+                        className="bg-transparent text-[10px] font-bold text-primary outline-none"
+                      >
+                        <option value="SME">SME</option>
+                        <option value="COMBA">COMBA</option>
+                        <option value="COBA">COBA</option>
+                      </select>
+                    </div>
                   </div>
                   <button 
                     onClick={() => setIsFacilityModalOpen(true)}
@@ -1115,27 +1129,23 @@ export default function ApplicationCase() {
 
       {/* Modals - Reusing previous logic */}
       {isFacilityModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center p-4 border-b border-border">
-              <h2 className="text-sm font-bold uppercase tracking-wider">Add New Facility</h2>
-              <button onClick={() => setIsFacilityModalOpen(false)} className="text-text-secondary hover:text-text-primary">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <FormField label="Facility Type" type="select" options={["Term Loan", "Working Capital Line", "Letter of Credit", "Bank Guarantee"]} />
-              <FormField label="Amount (USD)" type="number" placeholder="0.00" />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField label="Tenor" type="text" placeholder="e.g. 60 Months" />
-                <FormField label="Pricing" type="text" placeholder="e.g. SOFR + 2.5%" />
-              </div>
-              <button className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4">
-                ADD FACILITY
-              </button>
-            </div>
-          </div>
-        </div>
+        <FacilityDetailForm 
+          segment={appSegment}
+          onClose={() => setIsFacilityModalOpen(false)}
+          onSave={(data) => {
+            const newFacility = {
+              id: facilities.length + 1,
+              name: data.facility.name,
+              amount: Number(data.details.proposed_limit) || 0,
+              outstanding: 0,
+              currency: data.details.currency || "USD",
+              type: data.facility.code,
+              status: "Draft"
+            };
+            setFacilities([...facilities, newFacility]);
+            setIsFacilityModalOpen(false);
+          }}
+        />
       )}
 
       {isCollateralModalOpen && (
