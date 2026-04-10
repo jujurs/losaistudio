@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 
+import CollateralDetailForm from "./CollateralDetailForm";
+
 const stages = [
   { id: "origination", label: "Origination", status: "completed" },
   { id: "analysis", label: "Credit Analysis", status: "current" },
@@ -690,12 +692,13 @@ export default function ApplicationCase() {
                       <tr>
                         <th className="w-12">No.</th>
                         <th>SIBS ID</th>
-                        <th>SYARIAH ID</th>
                         <th>Abbr.</th>
                         <th>Type</th>
-                        <th>Category</th>
-                        <th>Code</th>
-                        <th className="text-right">Value</th>
+                        <th>Status</th>
+                        <th>Ownership</th>
+                        <th className="text-right">Market Value</th>
+                        <th className="text-right">Eligible Value</th>
+                        <th>Valuation Expiry</th>
                         <th className="w-12"></th>
                       </tr>
                     </thead>
@@ -704,12 +707,13 @@ export default function ApplicationCase() {
                         <tr key={c.id}>
                           <td className="text-center font-mono text-[10px]">{i + 1}</td>
                           <td className="font-mono text-[10px]">SIBS-{c.id}</td>
-                          <td className="font-mono text-[10px]">SYR-{c.id}</td>
                           <td className="font-bold text-[10px]">{c.type.substring(0, 3).toUpperCase()}</td>
-                          <td className="text-xs">{c.type}</td>
-                          <td className="text-xs">Main</td>
-                          <td className="font-mono text-[10px]">{c.code}</td>
+                          <td className="text-xs font-bold">{c.type}</td>
+                          <td><span className="bg-success/10 text-success px-2 py-0.5 rounded text-[10px] font-bold uppercase">Active</span></td>
+                          <td className="text-[10px]">Borrower</td>
                           <td className="text-right font-bold">${c.value.toLocaleString()}</td>
+                          <td className="text-right font-bold text-primary">${(c.value * 0.8).toLocaleString()}</td>
+                          <td className="text-[10px] text-text-secondary">2025-04-10</td>
                           <td>
                             <button className="text-text-secondary hover:text-danger"><Trash2 className="w-4 h-4" /></button>
                           </td>
@@ -1094,24 +1098,20 @@ export default function ApplicationCase() {
       )}
 
       {isCollateralModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center p-4 border-b border-border">
-              <h2 className="text-sm font-bold uppercase tracking-wider">Add New Collateral</h2>
-              <button onClick={() => setIsCollateralModalOpen(false)} className="text-text-secondary hover:text-text-primary">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <FormField label="Collateral Type" type="select" options={["Real Estate", "Corporate Guarantee", "Cash Deposit", "Inventory & Receivables"]} />
-              <FormField label="Market Value (USD)" type="number" placeholder="0.00" />
-              <FormField label="Description" type="textarea" placeholder="Details about the collateral..." />
-              <button className="w-full bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover mt-4">
-                ADD COLLATERAL
-              </button>
-            </div>
-          </div>
-        </div>
+        <CollateralDetailForm 
+          onClose={() => setIsCollateralModalOpen(false)}
+          onSave={(data) => {
+            const newCollateral = {
+              id: collaterals.length + 1,
+              type: data.type,
+              value: 12000000, // Mock value
+              description: "New collateral added",
+              code: `COL-${collaterals.length + 1}`
+            };
+            setCollaterals([...collaterals, newCollateral]);
+            setIsCollateralModalOpen(false);
+          }}
+        />
       )}
 
       {isLinkModalOpen && (
