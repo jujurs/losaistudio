@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-primary: #0f62fe;
+  --color-primary-hover: #0353e9;
+  --color-background: #ffffff;
+  --color-surface: #f4f4f4;
+  --color-surface-hover: #e0e0e0;
+  --color-border: #e0e0e0;
+  --color-text-primary: #161616;
+  --color-text-secondary: #525252;
+  --color-success: #198038;
+  --color-danger: #da1e28;
+  --color-warning: #f1c21b;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans antialiased;
+  }
+}
+
+/* Carbon-specific utility classes */
+.carbon-card {
+  @apply bg-surface p-4 border-b border-border;
+}
+
+.carbon-table {
+  @apply w-full text-sm;
+}
+
+.carbon-table th {
+  @apply text-left py-2 px-4 font-semibold text-text-secondary border-b border-border uppercase text-[10px] tracking-wider;
+}
+
+.carbon-table td {
+  @apply py-3 px-4 border-b border-border;
+}
+
+.carbon-table tr:nth-child(even) {
+  @apply bg-white/50;
+}
+
+.carbon-label {
+  @apply text-[10px] font-semibold text-text-secondary uppercase tracking-wider mb-1 block;
+}
+
+.carbon-value {
+  @apply text-sm font-medium text-text-primary;
+}
