@@ -159,3 +159,30 @@ export const TBO_PRODUCT_CATEGORIES = [
   'Supply Chain Finance',
   'Fee Based Income'
 ];
+
+export interface SLIKSubject {
+  id: string;
+  name: string;
+  type: 'Individual' | 'Corporate';
+  relationship: string;
+  idType: string;
+  idNo: string;
+  npwp?: string;
+  status: 'Draft' | 'Ready' | 'Requested' | 'Success' | 'Failed';
+  lastInquiryDate?: string;
+}
+
+export interface SLIKSummary {
+  subjectId: string;
+  totalLenders: number;
+  totalFacilities: number;
+  totalPlafond: number;
+  totalOutstanding: number;
+  totalPastDue: number;
+  totalInstallment: number;
+  worstCollectibility: number;
+  maxDPD: number;
+  restructuredCount: number;
+  writeOffCount: number;
+  riskFlag: 'Low' | 'Medium' | 'High';
+}

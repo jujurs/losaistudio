@@ -43,7 +43,6 @@ export default function App() {
           {currentView === "edit-portfolio" && <NewPortfolioForm mode="edit" />}
           {currentView === "portfolio-detail" && <Customer360 />}
           {currentView === "applications" && <ApplicationCase />}
-          {currentView === "analysis" && <FinancialAnalysis />}
           {currentView === "tasks" && <Tasks />}
           {currentView === "admin" && <BpmnModeler />}
         </main>

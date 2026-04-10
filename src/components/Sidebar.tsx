@@ -13,7 +13,6 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", id: "dashboard" },
   { icon: Briefcase, label: "Portfolio", id: "portfolio" },
   { icon: FileText, label: "Applications", id: "applications" },
-  { icon: BarChart3, label: "Analysis", id: "analysis" },
   { icon: CheckSquare, label: "Tasks", id: "tasks" },
   { icon: Settings, label: "Admin", id: "admin" },
 ];

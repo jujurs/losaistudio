@@ -31,6 +31,8 @@ import DrawdownConditionManager from "./DrawdownConditionManager";
 import GlobalTCManager from "./GlobalTCManager";
 import TBOManager from "./TBOManager";
 import FinancialAnalysis from "./FinancialAnalysis";
+import SLIKManager from "./SLIKManager";
+import TBODocManager from "./TBODocManager";
 
 const stages = [
   { id: "origination", label: "Origination", status: "completed" },
@@ -50,7 +52,8 @@ const TABS = [
   { id: "summary", label: "Facility Summary", icon: LayoutList },
   { id: "drawdown", label: "Drawdown Conditions", icon: CheckSquare },
   { id: "global-tc", label: "Global T&C & Covenants", icon: FileSearch },
-  { id: "tbo", label: "Total Business Opportunity", icon: BarChart3 },
+  { id: "tbo", label: "TBO (Relationship Wallet)", icon: BarChart3 },
+  { id: "tbo-docs", label: "To Be Obtained (Docs)", icon: FileText },
   { id: "financials", label: "Financial Spreading", icon: Calculator },
 ];
 
@@ -361,54 +364,14 @@ export default function ApplicationCase() {
 
             {activeTab === "compliance" && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {/* BMPK Details - Moved to Setup as requested */}
-                
-                {/* Credit Check Result */}
+                {/* SLIK Checking Module */}
                 <section className="space-y-6">
                   <div className="flex items-center gap-3 border-b border-border pb-2">
                     <Search className="w-5 h-5 text-primary" />
-                    <h2 className="text-sm font-bold uppercase tracking-widest">Credit Check Result</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-widest">SLIK Checking & Credit Result</h2>
                   </div>
-                  <div className="carbon-card p-0 overflow-hidden">
-                    <table className="carbon-table">
-                      <thead>
-                        <tr>
-                          <th className="w-12">No.</th>
-                          <th>Customer / Related Name</th>
-                          <th>ID Type</th>
-                          <th>ID No.</th>
-                          <th>SLIK Request Details</th>
-                          <th>Status</th>
-                          <th>BWCCS</th>
-                          <th className="text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-xs">
-                        <tr>
-                          <td className="text-center font-mono text-[10px]">1</td>
-                          <td className="font-bold">Global Logistics Systems Corp. (Self)</td>
-                          <td>NPWP</td>
-                          <td>88-2940219-X</td>
-                          <td className="py-2">
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[9px] text-text-secondary">
-                              <span>NPWP: 88.294.021.9-X</span>
-                              <span>Reg No: 12345678</span>
-                              <span>Purpose: New Loan</span>
-                              <span>NIK: -</span>
-                            </div>
-                          </td>
-                          <td><span className="bg-success/10 text-success px-2 py-0.5 rounded text-[10px] font-bold">CLEAN</span></td>
-                          <td>PASS</td>
-                          <td className="text-right">
-                            <div className="flex flex-col gap-1 items-end">
-                              <button className="text-primary text-[9px] font-bold hover:underline">RETRIEVE REPORT</button>
-                              <button className="text-text-secondary text-[9px] font-bold hover:underline">EDIT</button>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  
+                  <SLIKManager />
                 </section>
 
                 {/* Policy Checklist */}
@@ -1205,6 +1168,18 @@ export default function ApplicationCase() {
                       { category: 'Fee Based Income', opportunityAmount: 800000, capturedAmount: 250000, probability: 90, status: 'Won' },
                     ]}
                   />
+                </section>
+              </div>
+            )}
+            {activeTab === "tbo-docs" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <FileText className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">To Be Obtained (Docs & Data)</h2>
+                  </div>
+
+                  <TBODocManager />
                 </section>
               </div>
             )}
