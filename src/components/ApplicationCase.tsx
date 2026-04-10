@@ -54,9 +54,27 @@ export default function ApplicationCase() {
   ]);
 
   const [collaterals, setCollaterals] = useState([
-    { id: 1, type: "Real Estate", value: 12000000, description: "Warehouse in Chicago", code: "RE-001" },
-    { id: 2, type: "Corporate Guarantee", value: 5000000, description: "Parent Co Guarantee", code: "CG-002" },
+    { id: 1, type: "Real Estate", value: 12000000, description: "Warehouse in Chicago", code: "RE-001", appraisalStatus: "Completed", lastAppraisalDate: "2024-01-15" },
+    { id: 2, type: "Corporate Guarantee", value: 5000000, description: "Parent Co Guarantee", code: "CG-002", appraisalStatus: "Not Requested", lastAppraisalDate: "-" },
   ]);
+
+  const requestAppraisal = (id: number) => {
+    setCollaterals(collaterals.map(c => 
+      c.id === id ? { ...c, appraisalStatus: "In Progress" } : c
+    ));
+    
+    // Simulate surrounding system response after 3 seconds
+    setTimeout(() => {
+      setCollaterals(prev => prev.map(c => 
+        c.id === id ? { 
+          ...c, 
+          appraisalStatus: "Completed", 
+          value: c.value * (0.9 + Math.random() * 0.2), // Randomly adjust value
+          lastAppraisalDate: new Date().toISOString().split('T')[0] 
+        } : c
+      ));
+    }, 3000);
+  };
 
   const [links, setLinks] = useState([
     { facilityId: 1, collateralId: 1 },
@@ -698,7 +716,8 @@ export default function ApplicationCase() {
                         <th>Ownership</th>
                         <th className="text-right">Market Value</th>
                         <th className="text-right">Eligible Value</th>
-                        <th>Valuation Expiry</th>
+                        <th>Appraisal Status</th>
+                        <th>Last Appraisal</th>
                         <th className="w-12"></th>
                       </tr>
                     </thead>
@@ -713,9 +732,31 @@ export default function ApplicationCase() {
                           <td className="text-[10px]">Borrower</td>
                           <td className="text-right font-bold">${c.value.toLocaleString()}</td>
                           <td className="text-right font-bold text-primary">${(c.value * 0.8).toLocaleString()}</td>
-                          <td className="text-[10px] text-text-secondary">2025-04-10</td>
                           <td>
-                            <button className="text-text-secondary hover:text-danger"><Trash2 className="w-4 h-4" /></button>
+                            <div className="flex flex-col gap-1">
+                              <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase w-fit ${
+                                c.appraisalStatus === 'Completed' ? 'bg-success/10 text-success' :
+                                c.appraisalStatus === 'In Progress' ? 'bg-warning/10 text-warning animate-pulse' :
+                                'bg-surface text-text-secondary border border-border'
+                              }`}>
+                                {c.appraisalStatus}
+                              </span>
+                              {c.appraisalStatus === 'Not Requested' && (
+                                <button 
+                                  onClick={() => requestAppraisal(c.id)}
+                                  className="text-primary text-[9px] font-bold hover:underline text-left flex items-center gap-1"
+                                >
+                                  <Activity className="w-3 h-3" /> REQUEST
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                          <td className="text-[10px] text-text-secondary">{c.lastAppraisalDate}</td>
+                          <td>
+                            <div className="flex items-center gap-2">
+                              <button className="text-text-secondary hover:text-primary"><Info className="w-4 h-4" /></button>
+                              <button className="text-text-secondary hover:text-danger"><Trash2 className="w-4 h-4" /></button>
+                            </div>
                           </td>
                         </tr>
                       ))}
