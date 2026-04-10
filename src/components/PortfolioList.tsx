@@ -15,31 +15,6 @@ import { MOCK_PORTFOLIOS } from "../constants";
 
 export default function PortfolioList() {
   const [portfolios, setPortfolios] = useState(MOCK_PORTFOLIOS);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newPortfolio, setNewPortfolio] = useState({
-    name: "",
-    sector: "Industrial",
-    location: "",
-    exposure: "",
-    rating: "BBB"
-  });
-
-  const handleAddPortfolio = (e: React.FormEvent) => {
-    e.preventDefault();
-    const id = `DEB-${Math.floor(1000 + Math.random() * 9000)}-${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 10)}`;
-    const portfolio = {
-      id,
-      name: newPortfolio.name,
-      sector: newPortfolio.sector,
-      location: newPortfolio.location,
-      exposure: Number(newPortfolio.exposure) || 0,
-      rating: newPortfolio.rating,
-      status: "Active"
-    };
-    setPortfolios([portfolio, ...portfolios]);
-    setIsModalOpen(false);
-    setNewPortfolio({ name: "", sector: "Industrial", location: "", exposure: "", rating: "BBB" });
-  };
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
@@ -49,7 +24,7 @@ export default function PortfolioList() {
           <p className="text-text-secondary text-sm">Managing {portfolios.length} corporate relationships.</p>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => window.location.hash = "new-portfolio"}
           className="bg-primary text-white px-4 py-2 text-xs font-bold flex items-center gap-2 hover:bg-primary-hover transition-colors"
         >
           <Plus className="w-4 h-4" /> NEW PORTFOLIO
@@ -138,101 +113,6 @@ export default function PortfolioList() {
           </tbody>
         </table>
       </div>
-
-      {/* New Portfolio Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center p-4 border-b border-border">
-              <h2 className="text-sm font-bold uppercase tracking-wider">Create New Portfolio</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-text-secondary hover:text-text-primary">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleAddPortfolio} className="p-6 space-y-4">
-              <div>
-                <label className="carbon-label">Customer Legal Name</label>
-                <input 
-                  required
-                  type="text" 
-                  value={newPortfolio.name}
-                  onChange={(e) => setNewPortfolio({...newPortfolio, name: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                  placeholder="e.g. Acme Corp Industries"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="carbon-label">Sector</label>
-                  <select 
-                    value={newPortfolio.sector}
-                    onChange={(e) => setNewPortfolio({...newPortfolio, sector: e.target.value})}
-                    className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                  >
-                    <option>Industrial</option>
-                    <option>Technology</option>
-                    <option>Manufacturing</option>
-                    <option>Retail</option>
-                    <option>Energy</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="carbon-label">Risk Rating</label>
-                  <select 
-                    value={newPortfolio.rating}
-                    onChange={(e) => setNewPortfolio({...newPortfolio, rating: e.target.value})}
-                    className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                  >
-                    <option>A+</option>
-                    <option>A</option>
-                    <option>A-</option>
-                    <option>BBB+</option>
-                    <option>BBB</option>
-                    <option>BBB-</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="carbon-label">Location (City, State)</label>
-                <input 
-                  required
-                  type="text" 
-                  value={newPortfolio.location}
-                  onChange={(e) => setNewPortfolio({...newPortfolio, location: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                  placeholder="e.g. Houston, TX"
-                />
-              </div>
-              <div>
-                <label className="carbon-label">Initial Exposure (USD)</label>
-                <input 
-                  required
-                  type="number" 
-                  value={newPortfolio.exposure}
-                  onChange={(e) => setNewPortfolio({...newPortfolio, exposure: e.target.value})}
-                  className="w-full bg-surface border border-border p-2 text-sm focus:ring-1 focus:ring-primary outline-none"
-                  placeholder="0.00"
-                />
-              </div>
-              <div className="pt-4 flex gap-3">
-                <button 
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-surface border border-border py-2 text-xs font-bold hover:bg-surface-hover"
-                >
-                  CANCEL
-                </button>
-                <button 
-                  type="submit"
-                  className="flex-1 bg-primary text-white py-2 text-xs font-bold hover:bg-primary-hover"
-                >
-                  CREATE PORTFOLIO
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

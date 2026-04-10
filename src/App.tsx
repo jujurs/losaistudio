@@ -13,6 +13,7 @@ import BpmnModeler from "./components/BpmnModeler";
 import FinancialAnalysis from "./components/FinancialAnalysis";
 import Tasks from "./components/Tasks";
 import PortfolioList from "./components/PortfolioList";
+import NewPortfolioForm from "./components/NewPortfolioForm";
 
 export default function App() {
   const [currentView, setCurrentView] = useState("dashboard");
@@ -38,6 +39,7 @@ export default function App() {
         <main className="pt-12 min-h-screen">
           {currentView === "dashboard" && <Dashboard />}
           {currentView === "portfolio" && <PortfolioList />}
+          {currentView === "new-portfolio" && <NewPortfolioForm />}
           {currentView === "portfolio-detail" && <Customer360 />}
           {currentView === "applications" && <ApplicationCase />}
           {currentView === "analysis" && <FinancialAnalysis />}
