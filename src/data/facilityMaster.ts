@@ -71,14 +71,91 @@ export const FIELD_DEFINITIONS: Record<string, FieldDefinition> = {
   underlying_contract: { id: 'underlying_contract', label: 'Underlying Contract No.', type: 'text', required: true },
   hedging_purpose: { id: 'hedging_purpose', label: 'Hedging Purpose', type: 'select', options: ['Trade', 'Investment', 'Debt Service'] },
   anchor_name: { id: 'anchor_name', label: 'Anchor Name', type: 'lookup', required: true },
+  agreement_no: { id: 'agreement_no', label: 'Agreement / Waad No.', type: 'text' },
+  agreement_date: { id: 'agreement_date', label: 'Agreement Signed Date', type: 'date' },
+  takeover_non_bank: { id: 'takeover_non_bank', label: 'Take Over Non Bank?', type: 'select', options: ['Yes', 'No'] },
+  acquisition_cost: { id: 'acquisition_cost', label: 'Acquisition Cost', type: 'currency' },
+  down_payment: { id: 'down_payment', label: 'Down Payment', type: 'currency' },
 };
 
 export const FACILITY_FIELD_MAPPING: Record<string, string[]> = {
   OD: ['proposed_limit', 'currency', 'tenor_month', 'facility_purpose', 'repayment_type', 'interest_frequency', 'secured_indicator'],
-  TLF: ['proposed_limit', 'currency', 'tenor_month', 'grace_period', 'repayment_type', 'installment_option', 'secured_indicator'],
+  TLF: ['proposed_limit', 'currency', 'tenor_month', 'grace_period', 'repayment_type', 'installment_option', 'secured_indicator', 'agreement_no', 'agreement_date'],
+  AF: ['proposed_limit', 'currency', 'tenor_month', 'acquisition_cost', 'down_payment', 'secured_indicator', 'agreement_no'],
   PF: ['proposed_limit', 'currency', 'tenor_month', 'project_name', 'project_owner', 'grace_period', 'secured_indicator'],
   LCIMP: ['proposed_limit', 'currency', 'availability_period', 'beneficiary_name', 'secured_indicator'],
   'BG-PERF': ['proposed_limit', 'currency', 'beneficiary_name', 'underlying_contract', 'secured_indicator'],
   SUPF: ['proposed_limit', 'currency', 'anchor_name', 'tenor_month', 'secured_indicator'],
   FXLINE: ['proposed_limit', 'currency', 'hedging_purpose', 'secured_indicator'],
 };
+
+export interface DrawdownConditionMaster {
+  code: string;
+  name: string;
+  category: 'Legal' | 'Collateral' | 'Financial' | 'Compliance' | 'Utilization' | 'Deferred';
+  stage: 'Before Approval' | 'Before First Drawdown' | 'Before Each Drawdown' | 'After Drawdown';
+  mandatory: boolean;
+  blocking: boolean;
+}
+
+export const DRAWDOWN_CONDITION_MASTER: DrawdownConditionMaster[] = [
+  { code: 'AGR_SIGNED', name: 'Signed Credit Agreement', category: 'Legal', stage: 'Before First Drawdown', mandatory: true, blocking: true },
+  { code: 'SEC_DOCS', name: 'Signed Security Documents', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true },
+  { code: 'COL_LINK', name: 'Collateral Linkage Completed', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true },
+  { code: 'APP_VALID', name: 'Appraisal Report Valid', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true },
+  { code: 'INS_ACTIVE', name: 'Insurance Policy Active', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true },
+  { code: 'DP_PAID', name: 'Down Payment Evidence', category: 'Financial', stage: 'Before First Drawdown', mandatory: true, blocking: true },
+  { code: 'INV_AVAIL', name: 'Invoice / Purchase Order Available', category: 'Utilization', stage: 'Before Each Drawdown', mandatory: true, blocking: true },
+  { code: 'KYC_CLR', name: 'KYC & AML Screening Clear', category: 'Compliance', stage: 'Before Approval', mandatory: true, blocking: true },
+  { code: 'APHT_FIN', name: 'APHT Final Registration', category: 'Deferred', stage: 'After Drawdown', mandatory: true, blocking: false },
+  { code: 'PRO_NOTE', name: 'Promissory Note Signed', category: 'Legal', stage: 'Before Each Drawdown', mandatory: true, blocking: true },
+];
+
+export const FACILITY_CONDITION_TEMPLATE: Record<string, string[]> = {
+  OD: ['AGR_SIGNED', 'KYC_CLR', 'INS_ACTIVE'],
+  TLF: ['AGR_SIGNED', 'SEC_DOCS', 'COL_LINK', 'APP_VALID', 'INS_ACTIVE', 'KYC_CLR'],
+  AF: ['AGR_SIGNED', 'DP_PAID', 'INV_AVAIL', 'INS_ACTIVE', 'KYC_CLR'],
+  'BG-PERF': ['AGR_SIGNED', 'KYC_CLR'],
+  PF: ['AGR_SIGNED', 'SEC_DOCS', 'COL_LINK', 'KYC_CLR', 'INS_ACTIVE'],
+};
+
+export interface GlobalTCMaster {
+  code: string;
+  name: string;
+  category: 'Legal' | 'Compliance' | 'Financial' | 'Operational' | 'Security' | 'Covenant';
+  type: 'Standard' | 'Covenant' | 'Affirmative' | 'Negative';
+  mandatory: boolean;
+  monitoringRequired: boolean;
+}
+
+export const GLOBAL_TC_MASTER: GlobalTCMaster[] = [
+  { code: 'AUD_FS_ANN', name: 'Submit Audited Financial Statements Annually', category: 'Financial', type: 'Affirmative', mandatory: true, monitoringRequired: true },
+  { code: 'MGT_ACC_QTR', name: 'Submit Management Accounts Quarterly', category: 'Financial', type: 'Affirmative', mandatory: true, monitoringRequired: true },
+  { code: 'OWN_CHG_NOT', name: 'Notify Bank of Change in Ownership/Control', category: 'Legal', type: 'Negative', mandatory: true, monitoringRequired: false },
+  { code: 'MAIN_ACC_BNK', name: 'Maintain Main Operating Account with Bank', category: 'Operational', type: 'Affirmative', mandatory: true, monitoringRequired: true },
+  { code: 'DER_MAX_3', name: 'Maintain Debt to Equity Ratio (DER) Max 3.0x', category: 'Covenant', type: 'Covenant', mandatory: true, monitoringRequired: true },
+  { code: 'DSCR_MIN_1.2', name: 'Maintain Debt Service Coverage Ratio (DSCR) Min 1.25x', category: 'Covenant', type: 'Covenant', mandatory: true, monitoringRequired: true },
+  { code: 'INS_COV_ASSET', name: 'Maintain Insurance Coverage for Secured Assets', category: 'Security', type: 'Affirmative', mandatory: true, monitoringRequired: true },
+  { code: 'NO_DIV_STRESS', name: 'No Dividend Distribution if DSCR < 1.1x', category: 'Covenant', type: 'Negative', mandatory: false, monitoringRequired: true },
+  { code: 'KYC_RE_VET', name: 'Periodic KYC Re-Vetting Compliance', category: 'Compliance', type: 'Standard', mandatory: true, monitoringRequired: true },
+  { code: 'NEG_LST_CLR', name: 'Borrower Must Not Be in Negative List', category: 'Compliance', type: 'Standard', mandatory: true, monitoringRequired: false },
+];
+
+export interface TBOProductOpportunity {
+  category: string;
+  opportunityAmount: number;
+  capturedAmount: number;
+  probability: number;
+  status: 'Identified' | 'Proposed' | 'Won' | 'Lost';
+}
+
+export const TBO_PRODUCT_CATEGORIES = [
+  'Lending',
+  'Trade Finance',
+  'Bank Guarantee',
+  'Cash Management',
+  'FX & Treasury',
+  'Payroll',
+  'Supply Chain Finance',
+  'Fee Based Income'
+];

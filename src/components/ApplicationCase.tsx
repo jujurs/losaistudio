@@ -26,6 +26,9 @@ import { motion } from "motion/react";
 
 import CollateralDetailForm from "./CollateralDetailForm";
 import FacilityDetailForm from "./FacilityDetailForm";
+import DrawdownConditionManager from "./DrawdownConditionManager";
+import GlobalTCManager from "./GlobalTCManager";
+import TBOManager from "./TBOManager";
 
 const stages = [
   { id: "origination", label: "Origination", status: "completed" },
@@ -43,6 +46,9 @@ const TABS = [
   { id: "collaterals", label: "Collateral Builder", icon: Scale },
   { id: "verification", label: "Verification & Routing", icon: ClipboardCheck },
   { id: "summary", label: "Facility Summary", icon: LayoutList },
+  { id: "drawdown", label: "Drawdown Conditions", icon: CheckSquare },
+  { id: "global-tc", label: "Global T&C & Covenants", icon: FileSearch },
+  { id: "tbo", label: "Total Business Opportunity", icon: BarChart3 },
 ];
 
 export default function ApplicationCase() {
@@ -1123,6 +1129,82 @@ export default function ApplicationCase() {
               </div>
             )}
 
+            {activeTab === "drawdown" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <CheckSquare className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Drawdown Conditions Checklist</h2>
+                  </div>
+                  
+                  <div className="flex gap-4 mb-6">
+                    <div className="bg-white border border-border p-4 flex-1">
+                      <p className="text-[10px] font-bold text-text-secondary uppercase mb-1">Active Facility</p>
+                      <p className="text-sm font-bold text-primary">TL-LOG - Term Loan Logistics</p>
+                    </div>
+                    <div className="bg-white border border-border p-4 flex-1">
+                      <p className="text-[10px] font-bold text-text-secondary uppercase mb-1">Proposed Limit</p>
+                      <p className="text-sm font-bold">$10,000,000.00</p>
+                    </div>
+                  </div>
+
+                  <DrawdownConditionManager 
+                    facilityId={1} 
+                    facilityType="TLF" 
+                    initialConditions={[
+                      { code: 'AGR_SIGNED', name: 'Signed Credit Agreement', category: 'Legal', stage: 'Before First Drawdown', mandatory: true, blocking: true, status: 'Fulfilled', fulfilledDate: '2024-04-10' },
+                      { code: 'SEC_DOCS', name: 'Signed Security Documents', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true, status: 'Pending' },
+                      { code: 'COL_LINK', name: 'Collateral Linkage Completed', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true, status: 'Fulfilled', fulfilledDate: '2024-04-09' },
+                      { code: 'APP_VALID', name: 'Appraisal Report Valid', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true, status: 'Fulfilled', fulfilledDate: '2024-04-08' },
+                      { code: 'INS_ACTIVE', name: 'Insurance Policy Active', category: 'Collateral', stage: 'Before First Drawdown', mandatory: true, blocking: true, status: 'Pending' },
+                      { code: 'KYC_CLR', name: 'KYC & AML Screening Clear', category: 'Compliance', stage: 'Before Approval', mandatory: true, blocking: true, status: 'Fulfilled', fulfilledDate: '2024-04-05' },
+                    ]}
+                  />
+                </section>
+              </div>
+            )}
+            {activeTab === "global-tc" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <FileSearch className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Global Terms & Conditions (Obligor Level)</h2>
+                  </div>
+
+                  <GlobalTCManager 
+                    initialTCs={[
+                      { code: 'AUD_FS_ANN', name: 'Submit Audited Financial Statements Annually', category: 'Financial', type: 'Affirmative', mandatory: true, monitoringRequired: true, status: 'Active Monitoring', dueDate: '2024-06-30', lastReviewDate: '2023-06-15' },
+                      { code: 'OWN_CHG_NOT', name: 'Notify Bank of Change in Ownership/Control', category: 'Legal', type: 'Negative', mandatory: true, monitoringRequired: false, status: 'Fulfilled' },
+                      { code: 'DER_MAX_3', name: 'Maintain Debt to Equity Ratio (DER) Max 3.0x', category: 'Covenant', type: 'Covenant', mandatory: true, monitoringRequired: true, status: 'Active Monitoring', lastReviewDate: '2024-03-31' },
+                      { code: 'DSCR_MIN_1.2', name: 'Maintain Debt Service Coverage Ratio (DSCR) Min 1.25x', category: 'Covenant', type: 'Covenant', mandatory: true, monitoringRequired: true, status: 'Breached', lastReviewDate: '2024-03-31', remarks: 'Current DSCR at 1.18x due to temporary working capital pressure.' },
+                      { code: 'INS_COV_ASSET', name: 'Maintain Insurance Coverage for Secured Assets', category: 'Security', type: 'Affirmative', mandatory: true, monitoringRequired: true, status: 'Fulfilled', lastReviewDate: '2024-01-10' },
+                      { code: 'NEG_LST_CLR', name: 'Borrower Must Not Be in Negative List', category: 'Compliance', type: 'Standard', mandatory: true, monitoringRequired: false, status: 'Fulfilled' },
+                    ]}
+                  />
+                </section>
+              </div>
+            )}
+            {activeTab === "tbo" && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 border-b border-border pb-2">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest">Total Business Opportunity (TBO)</h2>
+                  </div>
+
+                  <TBOManager 
+                    initialOpportunities={[
+                      { category: 'Lending', opportunityAmount: 15000000, capturedAmount: 10000000, probability: 100, status: 'Won' },
+                      { category: 'Trade Finance', opportunityAmount: 5000000, capturedAmount: 1500000, probability: 60, status: 'Proposed' },
+                      { category: 'Cash Management', opportunityAmount: 2000000, capturedAmount: 800000, probability: 80, status: 'Proposed' },
+                      { category: 'FX & Treasury', opportunityAmount: 3500000, capturedAmount: 1200000, probability: 45, status: 'Identified' },
+                      { category: 'Payroll', opportunityAmount: 1200000, capturedAmount: 0, probability: 30, status: 'Identified' },
+                      { category: 'Fee Based Income', opportunityAmount: 800000, capturedAmount: 250000, probability: 90, status: 'Won' },
+                    ]}
+                  />
+                </section>
+              </div>
+            )}
           </div>
         </div>
       </div>
